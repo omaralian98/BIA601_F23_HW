@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Algorithms", "Algorithms\Algorithms.csproj", "{F9C04564-968D-4335-9878-4FA0239B2CD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Algorithms", "Algorithms\Algorithms.csproj", "{F9C04564-968D-4335-9878-4FA0239B2CD4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp8", "..\..\..\ConsoleApp8\ConsoleApp8\ConsoleApp8.csproj", "{8B72DC8E-CE9F-4B47-9BCF-EFF9866BEB68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8B72DC8E-CE9F-4B47-9BCF-EFF9866BEB68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B72DC8E-CE9F-4B47-9BCF-EFF9866BEB68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B72DC8E-CE9F-4B47-9BCF-EFF9866BEB68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
