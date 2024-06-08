@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Text;
 
 namespace Algorithms;
 
@@ -87,21 +89,21 @@ public class Mode3
             Random rand = new();
             if (n == crossoverPoints)
                 crossoverPoints--;
+
             for (int knapsackIndex = 0; knapsackIndex < Knapsacks.Length; knapsackIndex++)
             {
-                HashSet<int> indices = []; // Collection Without Duplicates
+                HashSet<int> indices = [];
                 while (indices.Count < crossoverPoints)
                 {
                     indices.Add(rand.Next(n));
                 }
-
                 foreach (var itemIndex in indices)
                 {
                     if (TakenItems.TryGetValue(itemIndex, out int takenKnapsackIndex))
                     {
                         Knapsacks[takenKnapsackIndex].Change(itemIndex);
-                        TakenItems[itemIndex] = knapsackIndex;
                     }
+                    TakenItems[itemIndex] = knapsackIndex;
                     Knapsacks[knapsackIndex].Change(itemIndex);
                 }
             }
@@ -109,14 +111,15 @@ public class Mode3
 
         public static Solution Crossover(Solution a, Solution b, int crossoverPoints, int[] capacities)
         {
-            int n = capacities.Length;
-            Solution child = new(n, capacities);
-            child.PopulateTheKnapsacks(a.Knapsacks[0].Chromosome.Length - 1);
+            int n = a.Knapsacks[0].Chromosome.Length;
+            Solution child = new(capacities.Length, capacities);
+            child.PopulateTheKnapsacks(n);
+
             Random rand = new();
             for (int i = 0; i < child.Knapsacks.Length; i++)
             {
-                SortedSet<int> indices = [child.Knapsacks[i].Chromosome.Length - 1]; // Collection Without Duplicates
-                while (indices.Count < crossoverPoints)
+                SortedSet<int> indices = [n];
+                while (indices.Count < crossoverPoints + 1)
                 {
                     indices.Add(rand.Next(n));
                 }
@@ -136,6 +139,7 @@ public class Mode3
             child.ResetTakenItems();
             return child;
         }
+
 
         public int CalculateFitness(int[] weights, int[] values)
         {
@@ -195,7 +199,7 @@ public class Mode3
         public int Fitness { get; set; }
         public int Capacity { get; set; } = capacity;
 
-        public readonly int[] PopulateTheKnapsack() 
+        public readonly int[] PopulateTheKnapsack()
         {
             Random rand = new();
             List<int> taken = [];
@@ -459,7 +463,7 @@ public class Mode3
             int maxIterations = settingsForGenetic.MaxIterations;
 
 
-            List<Solution> population = Init(populationSize);
+            List<Solution> population = Initialize(populationSize);
 
             int noChangeCounter = 0;
             int topElite = (int)(eliteRate * populationSize);
@@ -475,31 +479,30 @@ public class Mode3
                 List<(int fitness, Solution solution)> individualScores = population.Select(ch => (Fitness(ch), ch)).ToList();
                 individualScores.Sort((a, b) => b.fitness.CompareTo(a.fitness));
 
-                var rankedIndividuals = individualScores.Select(sv => sv.solution).ToList();
-                population = [.. rankedIndividuals.Take(topElite)];
+                population = Select(individualScores, topElite);
 
                 while (population.Count < populationSize)
                 {
+                    int c1 = rand.Next(0, topElite);
+                    int c2 = rand.Next(0, topElite);
+                    population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
+                    matingCount++;
                     if (rand.NextDouble() < mutationProbability)
                     {
                         int c = rand.Next(0, topElite);
-                        population.Add(Mutate(rankedIndividuals[c]));
+                        population.Add(Mutate(individualScores[c].solution));
                         mutationCount++;
                     }
-                    else
-                    {
-                        int c1 = rand.Next(0, topElite);
-                        int c2 = rand.Next(0, topElite);
-                        population.Add(CrossOver(rankedIndividuals[c1], rankedIndividuals[c2]));
-                        matingCount++;
-                    }
                 }
+
+                noChangeCounter = individualScores[0].fitness == bestFitness ? noChangeCounter + 1 : 0;
 
                 if (bestFitness < individualScores[0].fitness)
                 {
                     bestFitness = individualScores[0].fitness;
                     bestSolution = individualScores[0].solution;
                 }
+
                 if (i + 1 == maxIterations || (fast && noChangeCounter > maxIterations / 2))
                 {
                     break;
@@ -508,7 +511,7 @@ public class Mode3
             return (bestFitness, bestSolution.GetIncludedItems());
 
 
-            List<Solution> Init(int size)
+            List<Solution> Initialize(int size)
             {
                 var population = new List<Solution>();
                 for (int i = 0; i < size; i++)
@@ -521,6 +524,11 @@ public class Mode3
             }
 
             int Fitness(Solution chrmomsome) => chrmomsome.CalculateFitness(weights, values);
+
+            List<Solution> Select(List<(int fitness, Solution solution)> individuals, int topElite)
+            {
+                return individuals.Roulette(topElite);
+            }
 
             Solution Mutate(Solution chromosome)
             {

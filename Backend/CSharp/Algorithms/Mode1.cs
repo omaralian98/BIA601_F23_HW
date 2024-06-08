@@ -1,4 +1,6 @@
-﻿namespace Algorithms;
+﻿using System.Diagnostics.Metrics;
+
+namespace Algorithms;
 
 public class Mode1
 {
@@ -53,7 +55,7 @@ public class Mode1
                 }
             }
 
-            // Local function to calculate the distance of a given route
+            // Calculate the distance of a given route
             int CalculateRouteDistance(int[] route, int[][] distances)
             {
                 int totalDistance = distances[route[^1]][route[0]]; // Return to the starting point
@@ -64,7 +66,7 @@ public class Mode1
                 return totalDistance;
             }
 
-            // Local function to generate permutations of the cities
+            // Generate permutations of the cities
             IEnumerable<int[]> GetPermutations(int[] list, int length)
             {
                 if (length == 1) 
@@ -108,7 +110,7 @@ public class Mode1
         (int TotalDistance, int[] BestRoute) Dynamic_TSP()
         {
             int n = distances.Length;
-            var memo = new Dictionary<string, (int, int)>();
+            var memo = new Dictionary<(int, int), (int, int)>();
             var path = new List<int>();
 
             bool IsOver(int visited, int n) => visited == (1 << n) - 1;
@@ -117,7 +119,7 @@ public class Mode1
 
             int TSPFinder(int currentNode, int visited)
             {
-                string key = $"{currentNode}-{visited}";
+                (int, int) key = (currentNode, visited);
 
                 if (IsOver(visited, n))
                 {
@@ -157,7 +159,7 @@ public class Mode1
                 while (!IsOver(visited, n))
                 {
                     path.Add(current);
-                    string key = $"{current}-{visited}";
+                    (int, int) key = (current, visited);
                     current = memo[key].Item2;
                     visited = AddNode(visited, current);
                 }
@@ -200,33 +202,25 @@ public class Mode1
             int[] bestSolution = null;
 
 
-
-
             for (int i = 0; i < maxIterations; i++)
             {
                 List<(int fitness, int[] solution)> individualScores = population.Select(ch => (Fitness(ch), ch)).ToList();
 
                 individualScores.Sort((a, b) => a.fitness.CompareTo(b.fitness));
 
-
-                var rankedIndividuals = individualScores.Select(sv => sv.solution).ToList();
-
-                population = [.. rankedIndividuals.Take(topElite)];
+                population = Select(individualScores, topElite);
 
                 while (population.Count < populationSize)
                 {
+                    int c1 = rand.Next(0, topElite);
+                    int c2 = rand.Next(0, topElite);
+                    population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
+                    matingCount++;
                     if (rand.NextDouble() < mutationProbability)
                     {
                         int c = rand.Next(0, topElite);
-                        population.Add(Mutate(rankedIndividuals[c]));
+                        population.Add(Mutate(individualScores[c].solution));
                         mutationCount++;
-                    }
-                    else
-                    {
-                        int c1 = rand.Next(0, topElite);
-                        int c2 = rand.Next(0, topElite);
-                        population.Add(CrossOver(rankedIndividuals[c1], rankedIndividuals[c2]));
-                        matingCount++;
                     }
                 }
                 noChangeCounter = individualScores[0].fitness == bestFitness ? noChangeCounter + 1 : 0;
@@ -236,7 +230,8 @@ public class Mode1
                     bestFitness = individualScores[0].fitness;
                     bestSolution = individualScores[0].solution;
                 }
-                if (i + 1 == maxIterations)
+
+                if (i + 1 == maxIterations || (fast && noChangeCounter > maxIterations / 2))
                 {
                     break;
                 }
@@ -258,6 +253,11 @@ public class Mode1
                     poplation.Add(chromosome);
                 }
                 return poplation;
+            }
+
+            List<int[]> Select(List<(int fitness, int[] solution)> individuals, int topElite)
+            {
+                return individuals.Roulette(topElite);
             }
 
             int Fitness(int[] chromosome)
@@ -382,24 +382,23 @@ public class Mode1
         {
             bool IsIncluded(int combination, int currentItem) => (combination & (1 << currentItem)) != 0;
             int maxValue = 0;
-            bool[] bestCombination = new bool[n];
+            List<int> bestCombination = [];
 
             // Iterate through all possible combinations
-            // Go to the end of the function if you don't understand this loop
             for (int combination = 0; combination < (1 << n); combination++)
             {
                 int totalWeight = 0;
                 int totalValue = 0;
-                bool[] solution = new bool[n];
+                List<int> solution = [];
 
                 // Check each item to see if it's included in the current combination
-                for (int itemindex = 0; itemindex < n; itemindex++)
+                for (int itemIndex = 0; itemIndex < n; itemIndex++)
                 {
-                    if (IsIncluded(combination, itemindex))
+                    if (IsIncluded(combination, itemIndex))
                     {
-                        totalWeight += weights[itemindex];
-                        totalValue += values[itemindex];
-                        solution[itemindex] = true;
+                        totalWeight += weights[itemIndex];
+                        totalValue += values[itemIndex];
+                        solution.Add(itemIndex);
                     }
                 }
 
@@ -407,18 +406,11 @@ public class Mode1
                 if (totalWeight <= capacity && totalValue > maxValue)
                 {
                     maxValue = totalValue;
-                    bestCombination = (bool[])solution.Clone();
+                    bestCombination = new List<int>(solution);
                 }
             }
-            List<int> IncludedItems = [];
-            for (int i = 0; i < bestCombination.Length; i++)
-            {
-                if (bestCombination[i])
-                {
-                    IncludedItems.Add(i);
-                }
-            }
-            return (maxValue, IncludedItems.ToArray());
+
+            return (maxValue, [.. bestCombination]);
 
             /*
                 Let's say we have 10 item => n = 10.
@@ -465,28 +457,22 @@ public class Mode1
 
             // Backtracking to find the items included in the optimal solution
             int maxValue = memo[n, capacity];
-            int[] itemsIncluded = new int[n];
+            List<int> items = [];
             int remainingCapacity = capacity;
 
             for (int i = n; i > 0 && maxValue > 0; i--)
             {
                 if (maxValue != memo[i - 1, remainingCapacity])
                 {
-                    itemsIncluded[i - 1] = 1; // item i-1 is included
+                    items.Add(i - 1); // item i-1 is included
                     maxValue -= values[i - 1];
                     remainingCapacity -= weights[i - 1];
                 }
             }
-            List<int> items = new List<int>();
-            for (int i = 0; i < itemsIncluded.Length; i++)
-            {
-                if (itemsIncluded[i] == 1)
-                {
-                    items.Add(i);
-                }
-            }
 
-            return (memo[n, capacity], items.ToArray());
+            items.Reverse(); // Reverse to maintain the original order of indices
+
+            return (memo[n, capacity], [.. items]);
         }
         {
             //(int TotalValue, string Solution) Branch_And_Bound_Knapsack()
@@ -608,38 +594,37 @@ public class Mode1
 
                 individualScores.Sort((a, b) => b.fitness.CompareTo(a.fitness));
 
-
-                var rankedIndividuals = individualScores.Select(sv => sv.solution).ToList();
-
-                population = [.. rankedIndividuals.Take(topElite)];
+                population = Select(individualScores, topElite);
 
                 while (population.Count < populationSize)
                 {
+                    int c1 = rand.Next(0, topElite);
+                    int c2 = rand.Next(0, topElite);
+                    population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
+                    matingCount++;
+
                     if (rand.NextDouble() < mutationProbability)
                     {
                         int c = rand.Next(0, topElite);
-                        population.Add(Mutate(rankedIndividuals[c]));
+                        population.Add(Mutate(individualScores[c].solution));
                         mutationCount++;
                     }
-                    else
-                    {
-                        int c1 = rand.Next(0, topElite);
-                        int c2 = rand.Next(0, topElite);
-                        population.Add(CrossOver(rankedIndividuals[c1], rankedIndividuals[c2]));
-                        matingCount++;
-                    }
                 }
+
+                noChangeCounter = individualScores[0].fitness == bestFitness ? noChangeCounter + 1 : 0;
 
                 if (bestFitness < individualScores[0].fitness)
                 {
                     bestFitness = individualScores[0].fitness;
                     bestSolution = individualScores[0].solution;
                 }
+
                 if (i + 1 == maxIterations || (fast && noChangeCounter > maxIterations / 2))
                 {
                     break;
                 }
             }
+
             List<int> IncludedItems = [];
             for (int i = 0; i < bestSolution.Length; i++)
             {
@@ -692,6 +677,11 @@ public class Mode1
                 return answer;
             }
 
+            List<bool[]> Select(List<(int fitness, bool[] solution)> individuals, int topElite)
+            {
+                return individuals.Roulette(topElite);
+            }
+
             bool[] Mutate(bool[] chromosome)
             {
                 int numberOfCrossPoints = settingsForGenetic.NumberOfCrossOverPoints;
@@ -724,12 +714,12 @@ public class Mode1
                     points.Add(rand.Next(1, n));
                 }
 
-                HashSet<int> indices = new(); 
+                HashSet<int> indices = []; 
                 while (indices.Count < numberOfCrossPoints)
                 {
                     indices.Add(rand.Next(n));
                 }
-                List<int> point = indices.ToList();
+                List<int> point = [.. indices];
                 point.Sort();
 
                 int lastIndex = 0;
@@ -743,11 +733,6 @@ public class Mode1
                     lastIndex = index;
                 }
                 return child;
-            }
-
-            string Print(bool[] chromosome)
-            {
-                return string.Join("", chromosome.Select(bit => bit ? "1" : "0"));
             }
         }
     }
