@@ -4,14 +4,14 @@ namespace Algorithms;
 
 public class Mode1
 {
-    public static (int TotalDistance, int[] BestRoute, int TotalValue, int[] IncludedItems) Start(int[][] distances, int capacity, int[] weights, int[] values, Settings? settings = null)
+    public static (int TotalDistance, int[] BestRoute, int TotalValue, int[] IncludedItems) Start(int[][] distances, int capacity, int[] weights, int[] values, Settings? settings = null, int? startingIndex = null)
     {
         (int TotalValue, int[] IncludedItems) = StartKnapsack(capacity, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
-        (int TotalDistace, int[] BestRoute) = StartTSP(distances, settings?.AlgorithmForTSP, settings?.SettingsForGeneticTSP);
+        (int TotalDistace, int[] BestRoute) = StartTSP(distances, settings?.AlgorithmForTSP, settings?.SettingsForGeneticTSP, startingIndex);
         return (TotalDistace, BestRoute, TotalValue, IncludedItems);
     }
 
-    internal static (int TotalDistance, int[] BestRoute) StartTSP(int[][] distances, Algorithm? algorithm = null, SettingsForGenetic? settingsForGenetic = null)
+    internal static (int TotalDistance, int[] BestRoute) StartTSP(int[][] distances, Algorithm? algorithm = null, SettingsForGenetic? settingsForGenetic = null, int? startingIndex = null)
     {
         Random rand = new();
         int n = distances.Length;
@@ -59,8 +59,16 @@ public class Mode1
             int CalculateRouteDistance(int[] route, int[][] distances)
             {
                 int totalDistance = distances[route[^1]][route[0]]; // Return to the starting point
+                if (distances[route[^1]][route[0]] == -1 || (startingIndex is not null && route[0] != startingIndex))
+                {
+                    return int.MaxValue;
+                }
                 for (int i = 0; i < route.Length - 1; i++)
                 {
+                    if (distances[route[i]][route[i + 1]] == -1)
+                    {
+                        return int.MaxValue;
+                    }
                     totalDistance += distances[route[i]][route[i + 1]];
                 }
                 return totalDistance;

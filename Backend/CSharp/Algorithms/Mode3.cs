@@ -41,7 +41,7 @@ public class Mode3
         return (TotalDistace, BestRoutes, TotalValue, IncludedItems);
     }
 
-    private class Solution(int n, int[] capacities)
+    internal class Solution(int n, int[] capacities)
     {
         public Knapsack[] Knapsacks { get; set; } = new Knapsack[n];
 
@@ -193,7 +193,7 @@ public class Mode3
         }
     }
 
-    private struct Knapsack(int size, int capacity)
+    internal struct Knapsack(int size, int capacity)
     {
         public bool[] Chromosome { get; set; } = new bool[size];
         public int Fitness { get; set; }
@@ -543,6 +543,8 @@ public class Mode3
             }
         }
     }
+
+
 
 }
 
