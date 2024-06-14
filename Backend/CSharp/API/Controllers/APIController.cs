@@ -6,11 +6,11 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/")]
-    public class HomeController(ILogger<HomeController> logger) : ControllerBase
+    public class APIController(ILogger<APIController> logger) : ControllerBase
     {
         [HttpPost("mode1")]
         [Consumes("application/json")]
-        public ActionResult<ResponseModel> Test([FromBody] RequestModel request)
+        public ActionResult<ResponseModel> Mode1Json([FromBody] RequestModel request)
         {
             logger.LogInformation("Request Started");
             var (TotalDistance, BestRoute, TotalValue, IncludedItems) = Mode1.Start(request.Distances, request.Capacity, request.Weights, request.Values);
@@ -25,10 +25,40 @@ namespace API.Controllers
 
         [HttpPost("mode1")]
         [Consumes("multipart/form-data")]
-        public ActionResult<ResponseModel> Test1([FromForm] RequestModel request)
+        public ActionResult<ResponseModel> Mode1Form([FromForm] RequestModel request)
         {
             logger.LogInformation("Request Started");
             var (TotalDistance, BestRoute, TotalValue, IncludedItems) = Mode1.Start(request.Distances, request.Capacity, request.Weights, request.Values);
+            return Ok(new ResponseModel
+            {
+                BestRoute = BestRoute,
+                IncludedItems = IncludedItems,
+                TotalDistance = TotalDistance,
+                TotalValue = TotalValue,
+            });
+        }
+
+        [HttpPost("mode2")]
+        [Consumes("application/json")]
+        public ActionResult<ResponseModel> Mode2Json([FromBody] RequestModel request)
+        {
+            logger.LogInformation("Request Started");
+            var (TotalDistance, BestRoute, TotalValue, IncludedItems) = Mode2.Start(request.Distances, request.Capacity, request.Weights, request.Values);
+            return Ok(new ResponseModel
+            {
+                BestRoute = BestRoute,
+                IncludedItems = IncludedItems,
+                TotalDistance = TotalDistance,
+                TotalValue = TotalValue,
+            });
+        }
+
+        [HttpPost("mode1")]
+        [Consumes("multipart/form-data")]
+        public ActionResult<ResponseModel> Mode2Form([FromForm] RequestModel request)
+        {
+            logger.LogInformation("Request Started");
+            var (TotalDistance, BestRoute, TotalValue, IncludedItems) = Mode2.Start(request.Distances, request.Capacity, request.Weights, request.Values);
             return Ok(new ResponseModel
             {
                 BestRoute = BestRoute,

@@ -1,106 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Text;
-using static Algorithms.Mode4;
+﻿using System.Text;
 
 namespace Algorithms;
 
-public class Mode4
+public class Mode5
 {
-    public static (int TotalDistance, int[][] BestRoutes, int TotalValue, int[][] IncludedItems) Start(int[][] distances, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] capacities, int[] weights, int[] values, Settings? settings = null)
+    public static (int TotalDistance, int[][] BestRoutes, int TotalValue, int[][] IncludedItems) Start(int[][] distances, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] indicesOfPickingUpPoints, int[] indicesOfDroppingOffPoints, int[] capacities, int[] weights, int[] values, Settings? settings = null)
     {
-        {
-            //static int[][] SetStartingAndEndingPoint(int[][] distances, int start, int end)
-            //{
-            //    bool returnToStartingPoint = start == end;
-            //    if (returnToStartingPoint)
-            //    {
-            //        end = distances.Length;
-            //    }
-            //    List<List<int>> list = [];
-            //    for (int i = 0; i < distances.Length; i++)
-            //    {
-            //        int additional = (i == start || i == end) ? 0 : -1;
-            //        if (returnToStartingPoint)
-            //        {
-            //            list.Add([.. distances[i].Append(0).Append(additional)]);
-            //        }
-            //        else
-            //        {
-            //            list.Add([.. distances[i].Append(additional)]);
-            //        }
-            //    }
-
-            //    if (returnToStartingPoint)
-            //    {
-            //        Console.WriteLine(start);
-            //        list.Add(new List<int>(list[start]));
-            //    }
-
-            //    List<int> dummy = [];
-            //    for (int i = 0; i < list[0].Count - 1; i++)
-            //    {
-            //        int val = (i == start || i == end) ? 0 : -1;
-            //        dummy.Add(val);
-            //    }
-
-            //    dummy.Add(0);
-            //    list.Add(dummy);
-            //    return list.Select(x => x.ToArray()).ToArray();
-            //}
-
-            //int n = weights.Length;
-
-            //int TotalDistace = 0;
-            //int[][] BestRoutes = new int[capacities.Length][];
-            //int counter = 0;
-
-            //var (TotalValue, IncludedItems) = Mode3.StartKnapsack(capacities, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
-            //for (int i = 0; i < IncludedItems.Length; i++)
-            //{
-            //    var (NewDistances, Correctness) = Mode2.TrimDistances(IncludedItems[i], distances);
-
-            //    foreach (var item in Correctness)
-            //    {
-            //        Console.WriteLine(item);
-            //    }
-            //    int correctedEndingIndex = Correctness.Keys.ElementAt(Correctness.Values.First(x => x == indicesOfEndingPoints[i]));
-            //    int correctedStartingIndex = Correctness.Keys.ElementAt(Correctness.Values.First(x => x == indicesOfStartingPoints[i]));
-            //    NewDistances = SetStartingAndEndingPoint(NewDistances, correctedStartingIndex, correctedEndingIndex);
-            //    (int Distace, int[] BestRoute) = Mode1.StartTSP(NewDistances, /*settings?.AlgorithmForTSP*/ Algorithm.Brute_Force, settings?.SettingsForGeneticTSP, correctedStartingIndex);
-            //    if (indicesOfStartingPoints[i] == indicesOfEndingPoints[i])
-            //    {
-            //        BestRoute = BestRoute[..^3].Reverse().ToArray();
-            //    }
-            //    else
-            //    {
-            //        BestRoute = BestRoute[..^2];
-            //    }
-            //    if (BestRoute[0] != indicesOfStartingPoints[i])
-            //    {
-            //        BestRoute = BestRoute.Reverse().ToArray();
-            //    }
-            //    BestRoute = BestRoute.Append(BestRoute[0]).ToArray();
-            //    if (Correctness is not null)
-            //    {
-            //        BestRoutes[counter++] = new int[BestRoute.Length];
-
-            //        for (int j = 0; j < BestRoute.Length; j++)
-            //        {
-            //            BestRoutes[counter - 1][j] = Correctness[BestRoute[j]];
-            //        }
-            //    }
-            //    else
-            //    {
-            //        BestRoutes[counter - 1] = BestRoute;
-            //    }
-            //    TotalDistace += Distace;
-            //}
-        }
         var (TotalValue, AllCombinations) = StartKnapsack(capacities, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
-        var (TotalDistance, BestRoutes, IncludedItems) = StartTSP(distances, AllCombinations, indicesOfStartingPoints, indicesOfEndingPoints, capacities, settings?.AlgorithmForTSP, settings?.SettingsForGeneticTSP);
+
+        List<Item[][]> Included = [];
+        for (int i = 0; i < AllCombinations.Count; i++)
+        {
+            var combination = AllCombinations[i];
+            Item[][] items = new Item[combination.Length][];
+            for (int j = 0; j < combination.Length; j++)
+            {
+                items[j] = combination[j].Select(index => new Item
+                {
+                    Value = values[index],
+                    Weight = weights[index],
+                    PickUpLocation = new Location { Id = indicesOfPickingUpPoints[index], Distances = distances[indicesOfPickingUpPoints[index]] },
+                    DropOffLocation = new Location { Id = indicesOfDroppingOffPoints[index], Distances = distances[indicesOfDroppingOffPoints[index]] }
+                }).ToArray();
+            }
+            Included.Add(items);
+        }
+        var (TotalDistance, BestRoutes, IncludedItems) = StartTSP(distances, Included, indicesOfStartingPoints, indicesOfEndingPoints, capacities, settings?.AlgorithmForTSP, settings?.SettingsForGeneticTSP);
         return (TotalDistance, BestRoutes, TotalValue, IncludedItems);
     }
+
 
     internal static (int TotalValue, List<int[][]> AllCombinations) StartKnapsack(int[] capacities, int[] weights, int[] values, Algorithm? algorithm = null, SettingsForGenetic? settingsForGenetic = null)
     {
@@ -317,7 +245,7 @@ public class Mode4
 
     }
 
-    internal static (int TotalDistance, int[][] BestRoutes, int[][] IncludedItems) StartTSP(int[][] distances,List<int[][]> allCombinations, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] capacities, Algorithm? algorithm = null, SettingsForGenetic? settingsForGenetic = null)
+    internal static (int TotalDistance, int[][] BestRoutes, int[][] IncludedItems) StartTSP(int[][] distances, List<Item[][]> allCombinations, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] capacities, Algorithm? algorithm = null, SettingsForGenetic? settingsForGenetic = null)
     {
         Random rand = new();
         int n = distances.Length;
@@ -327,7 +255,7 @@ public class Mode4
                 if (n > 9)
                     throw new Exception("Brute Force is Expensive try reducing the number of cities or using another algorithm");
                 break;
-                //return Brute_Force_TSP();
+            //return Brute_Force_TSP();
             case Algorithm.Greedy:
                 //return Greedy_TSP();
                 break;
@@ -376,8 +304,8 @@ public class Mode4
                     Capacity = capacities[i],
                     StartingLocation = locations[indicesOfStartingPoints[i]],
                     EndingLocation = locations[indicesOfEndingPoints[i]],
-                    IncludedItems = allCombinations[chosen][i]
-                });
+                    IncludedItems = [.. allCombinations[chosen][i]],
+                });;
             }
 
             trucks = [.. tru];
@@ -419,9 +347,8 @@ public class Mode4
                         mutationCount++;
                     }
                 }
-
                 noChangeCounter = individualScores[0].fitness == bestFitness ? noChangeCounter + 1 : 0;
-                if (bestFitness > individualScores[0].fitness)
+                if (bestFitness > individualScores[0].fitness || bestSolution is null)
                 {
                     bestSolution = individualScores[0].solution.Copy(); // Ensure a deep copy
                     bestSolution.CalculateFitness();
@@ -433,7 +360,7 @@ public class Mode4
                 }
             }
 
-            bestSolution.CalculateFitness();
+            bestSolution?.CalculateFitness();
             return (bestSolution.Fitness, bestSolution.GetRoutes(), bestSolution.GetIncludedItems());
 
             List<Chromosome> Initialize(int size)
@@ -469,6 +396,20 @@ public class Mode4
         }
     }
 
+
+    public struct Item(int value, int weight, Location pickUpLocation, Location dropOffLocation)
+    {
+        public int Value { get; set; } = value;
+        public int Weight { get; set; } = weight;
+        public Location PickUpLocation { get; set; } = pickUpLocation;
+        public Location DropOffLocation { get; set; } = dropOffLocation;
+
+        public override readonly string ToString()
+        {
+            return $"{DropOffLocation.Id}";
+        }
+    }
+
     public class Chromosome
     {
         public int Fitness { get; set; }
@@ -476,26 +417,27 @@ public class Mode4
 
         private Truck[] trucks;
         private readonly Location[] locations;
-        private readonly List<int[][]> allCombination;
+        private readonly List<Item[][]> allCombination;
 
-        public Chromosome(Truck[] trucks, Location[] locations, List<int[][]> all)
+        public Chromosome(Truck[] trucks, Location[] locations, List<Item[][]> all)
         {
             this.trucks = trucks;
             this.locations = locations;
-            allCombination = all;
+            this.allCombination = all;
             InitializeRoutes();
         }
-        public Chromosome(Truck[] trucks, Location[] locations, List<Route> routes, List<int[][]> all) : this(trucks, locations, all)
+
+        public Chromosome(Truck[] trucks, Location[] locations, List<Route> routes, List<Item[][]> all) : this(trucks, locations, all)
         {
             Routes = routes;
         }
 
         public void InitializeRoutes()
         {
-            Routes = new();
+            Routes = [];
             foreach (var truck in trucks)
             {
-                var route = new Route(truck, locations);
+                var route = new Route(truck);
                 route.Shuffle();
                 Routes.Add(route);
             }
@@ -504,10 +446,20 @@ public class Mode4
         public void CalculateFitness()
         {
             Fitness = 0;
+            int max = 0;
             foreach (var route in Routes)
             {
                 int fit = route.CalculateFitness();
+                if (fit == int.MaxValue) 
+                {
+                    max++;
+                    continue;
+                }
                 Fitness += fit;
+            }
+            if (max > 0)
+            {
+                Fitness = int.MaxValue;
             }
         }
 
@@ -517,10 +469,10 @@ public class Mode4
             var newChromosome = Copy();
             newChromosome.CreateNewTrucks();
             var route = newChromosome.Routes[rand.Next(newChromosome.Routes.Count)];
-            if (route.RouteNodes.Length > 3)
+            if (route.RouteNodes.Count > 3)
             {
-                int idx1 = rand.Next(1, route.RouteNodes.Length - 1);
-                int idx2 = rand.Next(1, route.RouteNodes.Length - 1);
+                int idx1 = rand.Next(1, route.RouteNodes.Count - 1);
+                int idx2 = rand.Next(1, route.RouteNodes.Count - 1);
                 (route.RouteNodes[idx2], route.RouteNodes[idx1]) = (route.RouteNodes[idx1], route.RouteNodes[idx2]);
             }
             return newChromosome;
@@ -543,8 +495,8 @@ public class Mode4
 
             foreach (var truck in a.trucks)
             {
-                var parentARoute = a.Routes.First(route => route.Truck == truck).RouteNodes;
-                var parentBRoute = b.Routes.First(route => route.Truck == truck).RouteNodes;
+                var parentARoute = a.Routes.First(route => route.Truck == truck).RouteNodes.ToArray();
+                var parentBRoute = b.Routes.First(route => route.Truck == truck).RouteNodes.ToArray();
 
                 var startLocation = truck.StartingLocation;
                 var endLocation = truck.EndingLocation;
@@ -554,15 +506,14 @@ public class Mode4
                     crossoverPoints = parentARoute.Length - 3;
                 }
 
-                SortedSet<int> crossoverIndices = new();
+                SortedSet<int> crossoverIndices = [];
                 while (crossoverIndices.Count < crossoverPoints && parentARoute.Length > 3)
                 {
                     int index = rand.Next(1, parentARoute.Length - 2);
                     crossoverIndices.Add(index);
                 }
 
-                List<Location> childRoute = new();
-
+                List<Location> childRoute = [];
                 int currentParentIndex = 0;
                 int previousIndex = 0;
 
@@ -588,10 +539,9 @@ public class Mode4
                 childRoute.Add(endLocation);
 
                 Route finalRoute = new(truck);
-                finalRoute.SetRoute(childRoute.ToArray());
+                finalRoute.SetRoute([.. childRoute]);
                 childRoutes.Add(finalRoute);
             }
-
             var childChromosome = new Chromosome(a.trucks, a.locations, childRoutes, a.allCombination);
             childChromosome.CreateNewTrucks();
             return childChromosome;
@@ -605,7 +555,7 @@ public class Mode4
                 Routes = Routes.Select(r =>
                 {
                     var x = new Route(r.Truck);
-                    x.SetRoute(r.RouteNodes);
+                    x.SetRoute([.. r.RouteNodes]);
                     return x;
                 }).ToList()
             };
@@ -624,23 +574,23 @@ public class Mode4
                     Capacity = trucks[i].Capacity,
                     StartingLocation = trucks[i].StartingLocation,
                     EndingLocation = trucks[i].EndingLocation,
-                    IncludedItems = allCombination[chosen][i]
+                    IncludedItems = [.. allCombination[chosen][i]]
                 };
             }
             for (int i = 0; i < Routes.Count; i++)
             {
-                Routes[i] = new Route(newTrucks[i], locations);
+                Routes[i] = new Route(newTrucks[i]);
             }
             trucks = newTrucks;
             return newTrucks;
         }
-        
+
         public int[][] GetIncludedItems()
         {
             int[][] includedItems = new int[trucks.Length][];
             for (int i = 0; i < includedItems.Length; i++)
             {
-                includedItems[i] = trucks[i].IncludedItems;
+                includedItems[i] = trucks[i].IncludedItems.Select(item => item.DropOffLocation.Id).ToArray();
             }
             return includedItems;
         }
@@ -687,6 +637,7 @@ public class Mode4
         public static bool operator ==(Location a, Location b)
         {
             if (a.Distances.Length != b.Distances.Length) return false;
+            if (a.Id != b.Id) return false;
             for (int i = 0; i < a.Distances.Length; i++)
             {
                 if (a.Distances[i] != b.Distances[i]) return false;
@@ -696,7 +647,7 @@ public class Mode4
 
         public static bool operator !=(Location a, Location b) => !(a == b);
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             string x = $"Id: {Id} Distances: ";
             foreach (var item in Distances)
@@ -712,17 +663,18 @@ public class Mode4
         public int Capacity { get; set; }
         public Location StartingLocation { get; set; }
         public Location EndingLocation { get; set; }
-        public int[]? IncludedItems { get; set; }
+        public List<Item> IncludedItems { get; set; } = [];
 
-        public void AddItems(int[] items)
+        public void AddItems(List<Item> items)
         {
             IncludedItems = items;
         }
 
         public override string ToString()
         {
-            return $"Capacity: {Capacity}, IncludedItems: {string.Join(',', IncludedItems ?? [])}\nStarting Location: {StartingLocation}\nEnding Location: {EndingLocation}";
+            return $"Capacity: {Capacity}, IncludedItems: {string.Join(", ", IncludedItems)},\nStarting Location: {StartingLocation}\nEnding Location: {EndingLocation}";
         }
+
         public static bool operator ==(Truck a, Truck b)
         {
             return a.Capacity == b.Capacity && a.StartingLocation == b.StartingLocation && a.EndingLocation == b.EndingLocation;
@@ -734,39 +686,46 @@ public class Mode4
     public class Route
     {
         public Truck Truck { get; set; }
-        public Location[] RouteNodes { get; set; }
+        public List<Location> RouteNodes { get; set; }
 
         public Route(Truck truck)
         {
-            Truck = truck;
-            if (truck.IncludedItems is null)
-                throw new Exception("Included Items is null");
-        }
-
-        public Route(Truck truck, Location[] locations) : this(truck)
-        {
-            List<Location> list = [truck.StartingLocation];
-            for (int i = 1; i < truck.IncludedItems!.Length + 1; i++)
+            Truck = truck ?? throw new Exception("Truck shouldn't be null");
+            if (truck.IncludedItems == null)
             {
-                if (locations[truck.IncludedItems[i - 1]] == truck.StartingLocation ||
-                    locations[truck.IncludedItems[i - 1]] == truck.EndingLocation) continue;
-                list.Add(locations[truck.IncludedItems[i - 1]]);
+                throw new Exception("Included Items shouldn't be null");
             }
-            list.Add(truck.EndingLocation);
-            RouteNodes = [.. list];
+
+            RouteNodes = [truck.StartingLocation];
+            HashSet<int> visited = [];
+            foreach (var item in truck.IncludedItems)
+            {
+                if (!visited.Contains(item.PickUpLocation.Id))
+                {
+                    RouteNodes.Add(item.PickUpLocation);
+                    visited.Add(item.PickUpLocation.Id);
+                }
+
+                if (!visited.Contains(item.DropOffLocation.Id))
+                {
+                    RouteNodes.Add(item.DropOffLocation);
+                    visited.Add(item.DropOffLocation.Id);
+                }
+            }
+            RouteNodes.Add(truck.EndingLocation);
         }
 
         public void SetRoute(Location[] locations)
         {
-            RouteNodes = locations;
+            RouteNodes = [.. locations];
         }
 
         public void Shuffle()
         {
             Random rand = new();
-            var correctRoute = RouteNodes[1..^1];
-            rand.Shuffle(correctRoute);
-            for (int i = 1; i < RouteNodes.Length - 1; i++)
+            var correctRoute = RouteNodes.Skip(1).Take(RouteNodes.Count - 2).ToList();
+            correctRoute = [.. correctRoute.OrderBy(x => rand.Next())];
+            for (int i = 1; i < RouteNodes.Count - 1; i++)
             {
                 RouteNodes[i] = correctRoute[i - 1];
             }
@@ -776,22 +735,52 @@ public class Mode4
         {
             if (Truck is null || RouteNodes is null)
             {
-                throw new Exception("Shouldn't be null");
+                throw new Exception("Truck or RouteNodes shouldn't be null");
             }
             if (RouteNodes[0] != Truck.StartingLocation || RouteNodes[^1] != Truck.EndingLocation)
-                return int.MaxValue;
-
-            return Location.Traverse(RouteNodes);
+            {
+                return int.MaxValue;//If the solution doesn't start with the startinglocation or doesn't end with the endinglocation 
+            }
+            if (Truck.IncludedItems.Count == 0)
+            {
+                return 0;//If the truck doesn't have any included Items
+            }
+            foreach (var item in Truck.IncludedItems)
+            {
+                Dictionary<int, bool> pickedUp = [];
+                foreach (var inc in Truck.IncludedItems)
+                {
+                    pickedUp[inc.DropOffLocation.Id] = false;
+                }
+                for (int i = 1; i < RouteNodes.Count - 1; i++)
+                {
+                    if (RouteNodes[i] == item.PickUpLocation)
+                    {
+                        pickedUp[item.DropOffLocation.Id] = true;
+                    }
+                    else if (RouteNodes[i] == item.DropOffLocation)
+                    {
+                        if (!pickedUp[RouteNodes[i].Id])
+                        {
+                            return int.MaxValue; // Drop-off location visited before pick-up location
+                        }
+                        break;
+                    }
+                }
+            }
+            int fit = Location.Traverse([.. RouteNodes]);
+            return fit;
         }
 
         public int[] GetRoute()
         {
-            List<int> route = [];
-            for (int i = 0; i < RouteNodes.Length; i++)
+            if (RouteNodes.Count == 2)
             {
-                route.Add(RouteNodes[i].Id);
+                return [];
             }
-            return [.. route];
+            int skip = 0;
+            if (RouteNodes[0] == RouteNodes[1]) skip++;
+            return RouteNodes.Skip(skip).Select(node => node.Id).ToArray();
         }
 
         public override string ToString()
