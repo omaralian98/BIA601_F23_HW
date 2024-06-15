@@ -1,13 +1,34 @@
-﻿using System.Text;
+﻿using System;
+using System.Reflection;
+using System.Text;
 
 namespace Algorithms;
 
-public class Mode5
+public class Mode6
 {
-    public static (int TotalDistance, int[][] BestRoutes, int TotalValue, int[][] IncludedItems) Start(int[][] distances, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] indicesOfPickingUpPoints, int[] indicesOfDroppingOffPoints, int[] capacities, int[] weights, int[] values, Settings? settings = null)
+    public static (int TotalDistance, int[][] BestRoutes, int TotalValue, int[][] IncludedItems) Start(int[][] distances, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] indicesOfPickingUpPoints, int[] indicesOfDroppingOffPoints, int[] capacities, int[] weights, int[] values, int[] pickUpPenalties, int[] dropOffPenalties, Settings? settings = null)
     {
-        var (TotalValue, AllCombinations) = StartKnapsack(capacities, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
+        var (TotalValue, AllCombinations) = Mode5.StartKnapsack(capacities, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
 
+        List<Location> locations = [];
+        for (int i = 0; i < indicesOfPickingUpPoints.Length; i++)
+        {
+            locations.AddRange
+            ([
+            new Location
+            {
+                Id = indicesOfPickingUpPoints[i],
+                Distances = distances[indicesOfPickingUpPoints[i]],
+                Penalty = pickUpPenalties[i],
+            },
+            new Location
+            {
+                Id = indicesOfDroppingOffPoints[i],
+                Distances = distances[indicesOfDroppingOffPoints[i]],
+                Penalty = dropOffPenalties[i],
+            }
+            ]);
+        }
         List<Item[][]> Included = [];
         for (int i = 0; i < AllCombinations.Count; i++)
         {
@@ -19,233 +40,35 @@ public class Mode5
                 {
                     Value = values[index],
                     Weight = weights[index],
-                    PickUpLocation = new Location { Id = indicesOfPickingUpPoints[index], Distances = distances[indicesOfPickingUpPoints[index]] },
-                    DropOffLocation = new Location { Id = indicesOfDroppingOffPoints[index], Distances = distances[indicesOfDroppingOffPoints[index]] }
+                    PickUpLocation = new Location 
+                    { 
+                        Id = indicesOfPickingUpPoints[index],
+                        Distances = distances[indicesOfPickingUpPoints[index]],
+                        Penalty = pickUpPenalties[index],
+                    },
+                    DropOffLocation = new Location 
+                    { 
+                        Id = indicesOfDroppingOffPoints[index],
+                        Distances = distances[indicesOfDroppingOffPoints[index]],
+                        Penalty = dropOffPenalties[index],
+                    }
                 }).ToArray();
             }
             Included.Add(items);
         }
-        var (TotalDistance, BestRoutes, IncludedItems) = StartTSP(distances, Included, indicesOfStartingPoints, indicesOfEndingPoints, capacities, settings?.AlgorithmForTSP, settings?.SettingsForGeneticTSP);
+        var (TotalDistance, BestRoutes, IncludedItems) = StartTSP(distances, Included, indicesOfStartingPoints, indicesOfEndingPoints, capacities, locations, settings?.AlgorithmForTSP, settings?.SettingsForGeneticTSP);
+        TotalValue = 0;
+        foreach (var item in IncludedItems)
+        {
+            foreach (var item1 in item)
+            {
+                TotalValue += values[item1];
+            }
+        }
         return (TotalDistance, BestRoutes, TotalValue, IncludedItems);
     }
 
-
-    internal static (int TotalValue, List<int[][]> AllCombinations) StartKnapsack(int[] capacities, int[] weights, int[] values, Algorithm? algorithm = null, SettingsForGenetic? settingsForGenetic = null)
-    {
-        Random rand = new();
-        int n = weights.Length;
-        int knapsacksCounter = capacities.Length;
-
-        switch (algorithm)
-        {
-            case Algorithm.Brute_Force:
-                if (weights.Length > 20)
-                    throw new Exception("Brute Force is Expensive try reducing the items or using another algorithm");
-                return Brute_Force_Knapsack();
-            case Algorithm.Greedy:
-                throw new Exception("0/1 Knapsack doesn't have a greedy algorithm");
-            case Algorithm.Branch_And_Bound:
-                throw new NotImplementedException();
-            case Algorithm.Dynamic:
-                throw new NotImplementedException();
-            case Algorithm.Genetic:
-                return Genetic_Knapsack();
-            case null:
-                goto case Algorithm.Dynamic;
-        }
-        throw new Exception("No algorithm was found");
-
-        (int TotalValue, List<int[][]> AllCombinations) Brute_Force_Knapsack()
-        {
-            int maxTotalValue = 0;
-            List<List<int>[]> bestCombinations = [];
-
-            void Recurse(int itemIndex, int[] currentWeights, int currentValue, List<int>[] currentCombination)
-            {
-                if (itemIndex == n)
-                {
-                    if (currentValue > maxTotalValue)
-                    {
-                        maxTotalValue = currentValue;
-                        bestCombinations.Clear();
-                        var bestCombinationCopy = new List<int>[knapsacksCounter];
-                        for (int k = 0; k < knapsacksCounter; k++)
-                        {
-                            bestCombinationCopy[k] = new List<int>(currentCombination[k]);
-                        }
-                        bestCombinations.Add(bestCombinationCopy);
-                    }
-                    else if (currentValue == maxTotalValue)
-                    {
-                        var bestCombinationCopy = new List<int>[knapsacksCounter];
-                        for (int k = 0; k < knapsacksCounter; k++)
-                        {
-                            bestCombinationCopy[k] = new List<int>(currentCombination[k]);
-                        }
-                        bestCombinations.Add(bestCombinationCopy);
-                    }
-                    return;
-                }
-
-                // Try not including the current item in any knapsack
-                Recurse(itemIndex + 1, currentWeights, currentValue, currentCombination);
-
-                // Try including the current item in each knapsack
-                for (int k = 0; k < knapsacksCounter; k++)
-                {
-                    if (currentWeights[k] >= weights[itemIndex])
-                    {
-                        currentWeights[k] -= weights[itemIndex];
-                        currentCombination[k].Add(itemIndex);
-                        Recurse(itemIndex + 1, currentWeights, currentValue + values[itemIndex], currentCombination);
-                        currentCombination[k].RemoveAt(currentCombination[k].Count - 1);
-                        currentWeights[k] += weights[itemIndex];
-                    }
-                }
-            }
-
-            // Initialize the current combination array
-            List<int>[] currentCombination = new List<int>[knapsacksCounter];
-            for (int i = 0; i < knapsacksCounter; i++)
-            {
-                currentCombination[i] = [];
-            }
-
-            Recurse(0, (int[])capacities.Clone(), 0, currentCombination);
-
-            List<int[][]> result = [];
-            foreach (var combination in bestCombinations)
-            {
-                int[][] includedItems = new int[knapsacksCounter][];
-                for (int i = 0; i < knapsacksCounter; i++)
-                {
-                    includedItems[i] = [.. combination[i]];
-                }
-                result.Add(includedItems);
-            }
-
-            return (maxTotalValue, result);
-        }
-        (int TotalValue, List<int[][]> AllCombinations) Genetic_Knapsack()
-        {
-            settingsForGenetic ??= new SettingsForGenetic
-            {
-                Fast = true,
-                PopulationSize = 250,
-                MutationProbability = 0.36,
-                EliteRate = 0.125,
-                MaxIterations = 100,
-                NumberOfCrossOverPoints = 1
-            };
-            bool fast = settingsForGenetic.Fast;
-            int populationSize = settingsForGenetic.PopulationSize;
-            double mutationProbability = settingsForGenetic.MutationProbability;
-            double eliteRate = settingsForGenetic.EliteRate;
-            int maxIterations = settingsForGenetic.MaxIterations;
-
-            List<Mode3.Solution> population = Initialize(populationSize);
-
-            int noChangeCounter = 0;
-            int topElite = (int)(eliteRate * populationSize);
-            int mutationCount = 0;
-            int matingCount = 0;
-
-            int bestFitness = int.MinValue;
-            Mode3.Solution bestSolution = null;
-
-            HashSet<string> uniqueCombinations = [];
-            List<int[][]> bestCombinations = [];
-
-            for (int i = 0; i < maxIterations; i++)
-            {
-                List<(int fitness, Mode3.Solution solution)> individualScores = population.Select(ch => (Fitness(ch), ch)).ToList();
-                individualScores.Sort((a, b) => b.fitness.CompareTo(a.fitness));
-
-                population = Select(individualScores, topElite);
-
-                while (population.Count < populationSize)
-                {
-                    int c1 = rand.Next(0, topElite);
-                    int c2 = rand.Next(0, topElite);
-                    population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
-                    matingCount++;
-                    if (rand.NextDouble() < mutationProbability)
-                    {
-                        int c = rand.Next(0, topElite);
-                        population.Add(Mutate(individualScores[c].solution));
-                        mutationCount++;
-                    }
-                }
-
-                noChangeCounter = individualScores[0].fitness == bestFitness ? noChangeCounter + 1 : 0;
-
-                if (bestFitness < individualScores[0].fitness)
-                {
-                    bestFitness = individualScores[0].fitness;
-                    bestSolution = individualScores[0].solution;
-                    bestCombinations.Clear();
-                    uniqueCombinations.Clear();
-                }
-
-                int counter = 0;
-                while (true)
-                {
-                    if (individualScores[counter].fitness < bestFitness) break;
-                    var items = individualScores[counter++].solution.GetIncludedItems();
-                    string combinationKey = GetCombinationKey(items);
-                    if (uniqueCombinations.Add(combinationKey))
-                    {
-                        bestCombinations.Add(items);
-                    }
-                }
-
-                if (i + 1 == maxIterations || (fast && noChangeCounter > maxIterations / 2))
-                {
-                    break;
-                }
-            }
-            return (bestFitness, bestCombinations);
-
-            List<Mode3.Solution> Initialize(int size)
-            {
-                var population = new List<Mode3.Solution>();
-                for (int i = 0; i < size; i++)
-                {
-                    Mode3.Solution chromosome = new(knapsacksCounter, capacities);
-                    chromosome.PopulateTheKnapsacks(n);
-                    population.Add(chromosome);
-                }
-                return population;
-            }
-
-            int Fitness(Mode3.Solution chrmomsome) => chrmomsome.CalculateFitness(weights, values);
-
-            List<Mode3.Solution> Select(List<(int fitness, Mode3.Solution solution)> individuals, int topElite)
-            {
-                return individuals.Take(topElite).Select(ind => ind.solution).ToList();
-            }
-
-            Mode3.Solution Mutate(Mode3.Solution chromosome)
-            {
-                var copy = chromosome.Copy();
-                copy.Mutate(settingsForGenetic.NumberOfCrossOverPoints);
-                return copy;
-            }
-
-            Mode3.Solution CrossOver(Mode3.Solution a, Mode3.Solution b)
-            {
-                return Mode3.Solution.Crossover(a, b, settingsForGenetic.NumberOfCrossOverPoints, capacities);
-            }
-
-            string GetCombinationKey(int[][] items)
-            {
-                return string.Join(";", items.Select(knapsack => string.Join(",", knapsack.OrderBy(x => x))));
-            }
-        }
-
-    }
-
-    internal static (int TotalDistance, int[][] BestRoutes, int[][] IncludedItems) StartTSP(int[][] distances, List<Item[][]> allCombinations, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] capacities, Algorithm? algorithm = null, SettingsForGenetic? settingsForGenetic = null)
+    internal static (int TotalDistance, int[][] BestRoutes, int[][] IncludedItems) StartTSP(int[][] distances, List<Item[][]> allCombinations, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] capacities, List<Location> locations, Algorithm? algorithm = null, SettingsForGenetic? settingsForGenetic = null)
     {
         Random rand = new();
         int n = distances.Length;
@@ -284,16 +107,18 @@ public class Mode5
             };
 
             Truck[] trucks;
-            Location[] locations = new Location[distances.Length];
             for (int i = 0; i < distances.Length; i++)
             {
-                locations[i] = new Location
+                if (!locations.Any(x => x.Id == i))
                 {
-                    Id = i,
-                    Distances = distances[i]
-                };
-            }
+                    locations.Add(new Location
+                    {
+                        Id = i,
+                        Distances = distances[i]
+                    });
+                }
 
+            }
             int chosen = rand.Next(allCombinations.Count);
             List<Truck> tru = [];
             for (int i = 0; i < capacities.Length; i++)
@@ -302,10 +127,10 @@ public class Mode5
                 tru.Add(new Truck
                 {
                     Capacity = capacities[i],
-                    StartingLocation = locations[indicesOfStartingPoints[i]],
-                    EndingLocation = locations[indicesOfEndingPoints[i]],
+                    StartingLocation = locations.First(x => x.Id == indicesOfStartingPoints[i]),
+                    EndingLocation = locations.First(x => x.Id == indicesOfEndingPoints[i]),
                     IncludedItems = [.. allCombinations[chosen][i]],
-                });;
+                });
             }
 
             trucks = [.. tru];
@@ -366,7 +191,7 @@ public class Mode5
                 List<Chromosome> population = new();
                 for (int i = 0; i < size; i++)
                 {
-                    population.Add(new Chromosome(trucks, locations, allCombinations));
+                    population.Add(new Chromosome(trucks, [..locations], allCombinations));
                 }
                 return population;
             }
@@ -448,7 +273,7 @@ public class Mode5
             foreach (var route in Routes)
             {
                 int fit = route.CalculateFitness();
-                if (fit == int.MaxValue) 
+                if (fit == int.MaxValue)
                 {
                     max++;
                     continue;
@@ -616,6 +441,7 @@ public class Mode5
     {
         public int Id { get; set; } = id;
         public int[] Distances { get; set; } = distances;
+        public int Penalty { get; set; } = 0;
 
         public readonly int TravelTo(int index)
         {
@@ -647,7 +473,7 @@ public class Mode5
 
         public override readonly string ToString()
         {
-            string x = $"Id: {Id} Distances: ";
+            string x = $"Id: {Id}, Penalty: {Penalty}, Distances: ";
             foreach (var item in Distances)
             {
                 x += $"{item}, ";
@@ -729,8 +555,9 @@ public class Mode5
             }
         }
 
-        public int CalculateFitness()
+        public int CalculateFitness(bool yes = false)
         {
+            int fitness = 0;
             if (Truck is null || RouteNodes is null)
             {
                 throw new Exception("Truck or RouteNodes shouldn't be null");
@@ -765,9 +592,13 @@ public class Mode5
                         break;
                     }
                 }
+                // If we reached this part of the code that means The route is valid
+                // The only thing left is the penalty of picking this item up and dropping it off
+                fitness += item.PickUpLocation.Penalty;
+                fitness += item.DropOffLocation.Penalty;
             }
-            int fit = Location.Traverse([.. RouteNodes]);
-            return fit;
+            fitness += Location.Traverse([.. RouteNodes]);
+            return fitness;
         }
 
         public int[] GetRoute()
