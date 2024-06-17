@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import useFormData from "../../store";
@@ -25,10 +25,10 @@ const DistancesForm = () => {
   const [timeUnit, setTimeUnit] = useState("minutes");
   const [truckSpeed, setTruckSpeed] = useState(0);
   const [possibles, setPossibles] = useState([]);
-  const { setFormDataToSend, mode } = useFormData();
-  const { formDataStorage, addLoctaionsTime } = useFormData();
+  const { formDataStorage, addLoctaionsTime, mode } = useFormData();
   const locations = formDataStorage.locations.locations_name;
   const distances = [];
+  console.log(mode);
 
   let counter = 0;
 
@@ -102,17 +102,7 @@ const DistancesForm = () => {
       }
     }
 
-    setFormDataToSend({
-      [mode.link === "mode1" || mode.link === "mode2"
-        ? "capacity"
-        : "capacities"]:
-        mode.link === "mode1" || mode.link === "mode2"
-          ? formDataStorage.capacity
-          : formDataStorage.capacities,
-      distances,
-      values: formDataStorage.objects.values,
-      weights: formDataStorage.objects.weights,
-    });
+    addLoctaionsTime(distances);
   };
 
   return (
@@ -208,11 +198,16 @@ const DistancesForm = () => {
           Previous
         </button>
         <Link
-          to={!isEmpty ? "/final" : ""}
+          to={
+            !isEmpty
+              ? mode.link !== "mode1" && mode.link !== "mode2"
+                ? "/capacities"
+                : "/objects"
+              : ""
+          }
           onClick={() => {
             if (!checkIsEmpty()) return;
             handleUpdateTimeAfterSpeed();
-            addLoctaionsTime(possibles);
             handleAddDistances();
           }}
           className="bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">

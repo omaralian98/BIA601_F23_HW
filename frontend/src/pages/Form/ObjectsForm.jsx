@@ -20,7 +20,7 @@ const ObjectForm = () => {
     });
 
   const navigate = useNavigate();
-  const { formDataStorage, addObjects } = useFormData();
+  const { formDataStorage, addObjects, mode } = useFormData();
   const [objectSpecs, setObjectSpecs] = useState({
     name: "",
     value: 0,
@@ -179,7 +179,15 @@ const ObjectForm = () => {
             }
             addObjects(formData);
           }}
-          to={formData.names.length == objectCount && "/page-3"}
+          to={
+            formData.names.length == objectCount
+              ? mode.link === "mode5" ||
+                mode.link === "mode6" ||
+                mode.link === "mode7"
+                ? "/objects-details"
+                : "/final"
+              : ""
+          }
           className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
           Next
         </Link>

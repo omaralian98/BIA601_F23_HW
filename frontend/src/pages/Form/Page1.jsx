@@ -39,12 +39,11 @@ const Page1 = () => {
       objects_count: formDataStorage.objects_count,
       locations_count: formDataStorage.locations_count,
     });
-  }, []);
+  }, [mode]);
 
   const checkIsEmpty = () => {
     for (const [key, value] of Object.entries(formData)) {
       if (!value) {
-        console.log(key);
         return true;
       }
     }
@@ -72,7 +71,7 @@ const Page1 = () => {
             <Input
               type="number"
               placeholder="Truck capacity"
-              name="capacity"
+              name="Truck capacity"
               value={formData["capacity"]}
               onChange={(e) =>
                 setFormData({ ...formData, capacity: e.target.value })
@@ -84,7 +83,7 @@ const Page1 = () => {
             <Input
               type="number"
               placeholder="Trucks count"
-              name="trucks_count"
+              name="Trucks count"
               value={formData["trucks_count"]}
               onChange={(e) =>
                 setFormData({ ...formData, trucks_count: e.target.value })
@@ -95,8 +94,8 @@ const Page1 = () => {
         <div className="md:w-[45%] w-[90%]">
           <Input
             type="number"
-            placeholder="Objects count"
-            name="objects_count"
+            placeholder="Items count"
+            name="Items count"
             value={formData["objects_count"]}
             onChange={(e) =>
               setFormData({ ...formData, objects_count: e.target.value })
@@ -107,7 +106,7 @@ const Page1 = () => {
           <Input
             type="number"
             placeholder="Locations count"
-            name="locations_count"
+            name="Locations count"
             value={formData["locations_count"]}
             onChange={(e) =>
               setFormData({ ...formData, locations_count: e.target.value })
@@ -128,13 +127,7 @@ const Page1 = () => {
               return;
             } else setFormDataStorage(formData);
           }}
-          to={
-            !checkIsEmpty()
-              ? mode.link === "mode1" || mode.link === "mode2"
-                ? "/page-2"
-                : "/capacities"
-              : ""
-          }
+          to={!checkIsEmpty() ? "/locations" : ""}
           className="text-center text-lg bg-blue-600 px-8 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
           Next
         </Link>

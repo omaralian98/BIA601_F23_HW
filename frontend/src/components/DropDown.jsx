@@ -1,23 +1,35 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import useFormData from "../store";
+import { generateRandomData } from "../Tools/help_functions/genrateRandom";
+import useClose from "../hooks/useClose";
 
 const DropDown = () => {
-  const { changeMode, mode, setFormDataStorage } = useFormData();
+  const { changeMode, mode, setFormDataStorage, setRandomData } = useFormData();
   const navigate = useNavigate();
 
-  const [show, setShow] = useState(false);
+  const { mouse, open, setOpen } = useClose();
+
+  const handleChangeMode = (mode) => {
+    changeMode(mode);
+    setRandomData(generateRandomData(mode.link));
+    setOpen(false);
+  };
+
   const modes = [
     { name: "Mode 1", link: "mode1" },
     { name: "Mode 2", link: "mode2" },
     { name: "Mode 3", link: "mode3" },
     { name: "Mode 4", link: "mode4" },
+    { name: "Mode 5", link: "mode5" },
+    { name: "Mode 6", link: "mode6" },
+    { name: "Mode 7", link: "mode7" },
   ];
 
   return (
     <div className="relative">
       <button
-        onClick={() => setShow(!show)}
+        onClick={() => setOpen(!open)}
         className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
         {mode.name}
         <svg
@@ -35,15 +47,17 @@ const DropDown = () => {
           />
         </svg>
       </button>
-      {show && (
-        <div className="z-10 absolute top-[110%] -left-1/3 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
+      {open && (
+        <div
+          ref={mouse}
+          className="z-10 absolute top-[110%] -left-1/3 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
           <ul
             className="py-2 text-sm text-gray-700 dark:text-gray-200"
             aria-labelledby="dropdownDefaultButton">
             {modes.map((mode) => (
               <li
                 onClick={() => {
-                  changeMode(mode);
+                  handleChangeMode(mode);
                   navigate("/");
                   setFormDataStorage({
                     capacity: 0,

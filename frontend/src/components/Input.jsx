@@ -3,7 +3,7 @@ import React from "react";
 const Input = ({ type, placeholder, name, onChange, value, onKeyDown }) => {
   return (
     <div>
-      <label className="block mb-2 text-sm font-semibold text-gray-900">
+      <label className="block mb-2 text-base font-semibold text-gray-900">
         {name}
       </label>
       <input

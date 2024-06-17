@@ -27,9 +27,19 @@ import useFormData from "../../store";
 //   });
 // };
 
-const Graph = () => {
-  const { response } = useFormData();
+const Maps = ({ multipleMaps }) => {
+  return (
+    <div className="flex gap-5 flex-wrap w-[100vw] h-[100vh] overflow-auto">
+      {multipleMaps.length > 1
+        ? multipleMaps.map((map) => <Graph map={map.route} />)
+        : multipleMaps.map((map) => <Graph map={map} />)}
+    </div>
+  );
+};
 
+export default Maps;
+
+export const Graph = ({ map }) => {
   const { formDataStorage } = useFormData();
   const [nodes, setNodes] = useState([]);
   const [links, setLinks] = useState([]);
@@ -42,17 +52,11 @@ const Graph = () => {
     label: e,
   }));
 
-  for (let i = 0; i < response?.bestRoute?.length; i++) {
+  for (let i = 0; i < map.length; i++) {
     let start;
     let end;
-    start =
-      formDataStorage?.locations?.locations_name[
-        parseInt(response.bestRoute[i])
-      ];
-    end =
-      formDataStorage?.locations?.locations_name[
-        parseInt(response?.bestRoute[i + 1])
-      ];
+    start = formDataStorage?.locations?.locations_name[parseInt(map[i])];
+    end = formDataStorage?.locations?.locations_name[parseInt(map[i + 1])];
     locations.push({ start, end });
   }
   locations.map((location, i) => {
@@ -113,11 +117,25 @@ const Graph = () => {
     return () => {
       simulation.stop();
     };
-  }, [locations, response]);
+  }, [locations, map]);
+
+  // const sourceNodeIds = new Set(links.map((link) => link.source.id));
 
   return (
-    <div className="flex justify-center items-center w-full h-full">
-      <svg ref={svgRef} width={600} height={600}>
+    <div className="flex justify-center items-center overflow-auto">
+      <svg ref={svgRef} width={600} height={600} className="overflow-auto">
+        <defs>
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="10"
+            refX="15"
+            refY="3"
+            orient="auto"
+            markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="black" />
+          </marker>
+        </defs>
         {links.map((link, index) => (
           <line
             key={index}
@@ -126,6 +144,7 @@ const Graph = () => {
             x2={link.target.x}
             y2={link.target.y}
             stroke="black"
+            markerEnd="url(#arrowhead)"
           />
         ))}
         {nodes.length > 0 &&
@@ -148,5 +167,3 @@ const Graph = () => {
     </div>
   );
 };
-
-export default Graph;

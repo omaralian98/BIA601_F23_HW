@@ -4,6 +4,7 @@ import Input from "../../components/Input";
 import { Link, useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { generateLocationNames } from "../../Tools/help_functions/generateLocationNames";
 
 const LocationsForm = () => {
   const notify = (message) =>
@@ -23,11 +24,26 @@ const LocationsForm = () => {
   const { formDataStorage, addLocations } = useFormData();
   const [location, setLocation] = useState("");
   const [formData, setFormData] = useState([]);
+  const [locations, setLocations] = useState([]);
   const locations_count = formDataStorage.locations_count;
 
+  const restLocations = generateLocationNames(
+    locations_count - locations.length
+  );
+
   useEffect(() => {
-    setFormData(formDataStorage?.locations?.locations_name || []);
+    if (formDataStorage?.locations?.locations_name?.length > 0)
+      setFormData([
+        ...formDataStorage?.locations?.locations_name,
+        ...restLocations,
+      ]);
+    else setFormData([...restLocations]);
   }, []);
+
+  useEffect(() => {
+    if (locations_count > formData.length)
+      setFormData([...locations, ...restLocations]);
+  }, [locations]);
 
   const handleChange = (e) => {
     setLocation(e.target.value);
@@ -35,7 +51,7 @@ const LocationsForm = () => {
 
   const handleAddLocation = () => {
     if (!location) {
-      notify("The location field is required");
+      notify("The location field is must not be empty");
       return;
     }
     for (let i = 0; i < formData.length; i++) {
@@ -44,12 +60,14 @@ const LocationsForm = () => {
         return;
       }
     }
-    if (formData.length >= locations_count) {
+    if (locations.length >= locations_count) {
       notify("You reached the maximum number of locations");
       return;
     }
+    setLocations([...locations, location]);
+    formData[locations.length] = location;
+    setFormData(formData);
     setLocation("");
-    setFormData([...formData, location]);
   };
 
   const handleKeyDown = (event) => {
@@ -57,6 +75,8 @@ const LocationsForm = () => {
       handleAddLocation();
     }
   };
+
+  console.log(formData);
 
   return (
     <div className="flex justify-center p-6 gap-4 w-full h-full bg-slate-200 border border-gray-400 rounded-lg flex-col overflow-y-auto">
@@ -85,16 +105,17 @@ const LocationsForm = () => {
           />
         </div>
         <div className="w-full flex justify-center gap-3 flex-wrap">
-          {formData.length > 0 &&
-            formData.map((e) => (
+          {locations.length > 0 &&
+            locations.map((e) => (
               <div
                 key={e}
                 className="relative rounded-xl bg-gray-800 p-4 flex justify-center items-center">
                 <p className="text-white font-semibold">{e}</p>
                 <span
-                  onClick={() =>
-                    setFormData(formData.filter((element) => element !== e))
-                  }
+                  onClick={() => {
+                    setLocations(locations.filter((element) => element !== e));
+                    setFormData(formData.filter((element) => element !== e));
+                  }}
                   className="absolute text-gray-200 -top-1 -left-1 rounded-full w-5 h-5 cursor-pointer flex justify-center items-center bg-red-500 hover:bg-red-400 font-semibold">
                   x
                 </span>
@@ -118,14 +139,11 @@ const LocationsForm = () => {
         <Link
           onClick={() => {
             if (formData.length < locations_count) {
-              notify(
-                `Locations number are less than ${formDataStorage.locations_count}`
-              );
-              return;
+              setFormData((prev) => [...prev, ...restLocations]);
             }
             addLocations(formData);
           }}
-          to={formData.length == locations_count && "/page-4"}
+          to={"/distances"}
           className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
           Next
         </Link>

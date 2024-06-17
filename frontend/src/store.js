@@ -1,6 +1,8 @@
 import { create } from "zustand";
 
 const useFormData = create((set) => ({
+  randomData: null,
+  setRandomData: (data) => set((store) => ({ ...store, randomData: data })),
   response: null,
   setResponse: (response) => set((store) => ({ ...store, response })),
   mode: { name: "Modes", link: "mode1" },
@@ -54,6 +56,33 @@ const useFormData = create((set) => ({
           ...store.formDataStorage.locations,
           distances,
         },
+      },
+    })),
+  addStartEndIndexesTrucks: (startEnd) =>
+    set((store) => ({
+      ...store,
+      formDataStorage: {
+        ...store.formDataStorage,
+        indicesofstartingpointes: startEnd["indicesofstartingpointes"],
+        indicesofendingpointes: startEnd["indicesofendingpointes"],
+      },
+    })),
+  addStartEndIndexesObjects: (startEnd) =>
+    set((store) => ({
+      ...store,
+      formDataStorage: {
+        ...store.formDataStorage,
+        indicesofpickinguppoints: startEnd["indicesofpickinguppoints"],
+        indicesofdroppingoffpoints: startEnd["indicesofdroppingoffpoints"],
+      },
+    })),
+  addPickUpDropOffTime: (pickUpDropOff) =>
+    set((store) => ({
+      ...store,
+      formDataStorage: {
+        ...store.formDataStorage,
+        pickUpPenalties: pickUpDropOff["pickUpPenalties"],
+        dropOffPenalties: pickUpDropOff["dropOffPenalties"],
       },
     })),
 }));
