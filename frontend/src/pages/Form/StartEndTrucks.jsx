@@ -35,6 +35,19 @@ const StartEndTrucks = () => {
     setFormData(formData);
   };
 
+  const handleCheckLocations = () => {
+    for (const [key, value] of Object.entries(temp)) {
+      for (let i = 0; i < value.length; i++) {
+        if (formDataStorage.locations.locations_name.indexOf(value[i]) === -1) {
+          return value[i];
+        }
+      }
+    }
+    return true;
+  };
+
+  const missedValue = handleCheckLocations();
+
   let isEmpty =
     formData.indicesofendingpointes.length ===
       formData.indicesofstartingpointes.length &&
@@ -94,9 +107,12 @@ const StartEndTrucks = () => {
               notify(`All fields are required`);
               return;
             }
-            addStartEndIndexesTrucks(formData);
+            if (missedValue !== true) {
+              notify(`${missedValue} does not exist in locations`);
+              return;
+            } else addStartEndIndexesTrucks(formData);
           }}
-          to={isEmpty && "/objects"}
+          to={isEmpty && missedValue === true && "/objects"}
           className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
           Next
         </Link>
