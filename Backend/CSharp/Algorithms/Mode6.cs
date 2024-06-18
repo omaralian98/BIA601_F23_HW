@@ -6,9 +6,20 @@ namespace Algorithms;
 
 public class Mode6
 {
-    public static (int TotalDistance, int[][] BestRoutes, int TotalValue, int[][] IncludedItems) Start(int[][] distances, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] indicesOfPickingUpPoints, int[] indicesOfDroppingOffPoints, int[] capacities, int[] weights, int[] values, int[] pickUpPenalties, int[] dropOffPenalties, Settings? settings = null)
+    public static (int TotalDistance, int[][] BestRoutes, int TotalValue, int[][] IncludedItems) Start(
+        int[][] distances,
+        int[] indicesOfStartingPoints,
+        int[] indicesOfEndingPoints,
+        int[] indicesOfPickingUpPoints,
+        int[] indicesOfDroppingOffPoints,
+        int[] capacities,
+        int[] weights,
+        int[] values,
+        int[] pickUpPenalties,
+        int[] dropOffPenalties,
+        Settings? settings = null)
     {
-        var (TotalValue, AllCombinations) = Mode5.StartKnapsack(capacities, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
+        var (TotalValue, AllCombinations) = Mode4.StartKnapsack(capacities, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
 
         List<Location> locations = [];
         for (int i = 0; i < indicesOfPickingUpPoints.Length; i++)
