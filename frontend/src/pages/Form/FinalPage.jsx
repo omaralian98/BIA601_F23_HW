@@ -47,10 +47,10 @@ const FinalPage = () => {
       <button
         onClick={() => {
           handleSubmit(
-            `https://80af-94-47-157-18.ngrok-free.app/api/${mode.link}`,
+            `http://bia601api-001-site1.ltempurl.com/api/${mode.link}`,
             formDataToSend
           );
-          if (successfulPost) navigate("map/nodes");
+          if (successfulPost) navigate("/map/nodes");
         }}
         className="bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
         Submit
