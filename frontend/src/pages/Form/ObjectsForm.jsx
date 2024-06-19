@@ -160,7 +160,7 @@ const ObjectForm = () => {
           </button>
         </div>
       </div>
-      <div className="w-full flex gap-4 h-fit justify-around">
+      <div className="w-full flex gap-4 h-fit justify-around flex-wrap">
         <button
           onClick={() => {
             addObjects(formData);
@@ -182,8 +182,7 @@ const ObjectForm = () => {
           to={
             formData.names.length == objectCount
               ? mode.link === "mode5" ||
-                mode.link === "mode6" ||
-                mode.link === "mode7"
+                mode.link === "mode6"
                 ? "/objects-details"
                 : "/final"
               : ""

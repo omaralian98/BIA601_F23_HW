@@ -76,8 +76,6 @@ const LocationsForm = () => {
     }
   };
 
-  console.log(formData);
-
   return (
     <div className="flex justify-center p-6 gap-4 w-full h-full bg-slate-200 border border-gray-400 rounded-lg flex-col overflow-y-auto">
       <ToastContainer
@@ -121,6 +119,14 @@ const LocationsForm = () => {
                 </span>
               </div>
             ))}
+          {restLocations.length > 0 &&
+            restLocations.map((e) => (
+              <div
+                key={e}
+                className="rounded-xl bg-gray-800 p-4 flex justify-center items-center">
+                <p className="text-white font-semibold">{e}</p>
+              </div>
+            ))}
         </div>
         <div className="w-full flex justify-end">
           <button
@@ -130,7 +136,7 @@ const LocationsForm = () => {
           </button>
         </div>
       </div>
-      <div className="w-full flex gap-4 h-fit justify-around">
+      <div className="w-full flex gap-4 h-fit justify-around flex-wrap">
         <button
           className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300"
           onClick={() => navigate(-1)}>

@@ -6,26 +6,30 @@ import DistancesForm from "./pages/Form/DistancesForm";
 import FinalPage from "./pages/Form/FinalPage";
 import LocationsForm from "./pages/Form/LocationsForm";
 import ObjectForm from "./pages/Form/ObjectsForm";
-import Page1 from "./pages/Form/Page1";
 import useFormData from "./store";
 import Maps from "./pages/Map/Nodes";
 import StartEndTrucks from "./pages/Form/StartEndTrucks";
 import StartEndObjects from "./pages/Form/StartEndObjects";
 import PickUpDropOff from "./pages/Form/PickUpDropOff";
+import Home from "./pages/Home/Home";
+import InitialForm from "./pages/Form/InitialForm";
+import BenchMark from "./pages/BenchMark/BenchMark";
 
 function App() {
   const { pathname } = useLocation();
   const { response, mode } = useFormData();
 
   return (
-    <div className="App h-full p-4 flex flex-col gap-3">
+    <div className="App p-4 flex flex-col gap-3 justify-between">
       {pathname !== "/map/nodes" && <NavBar />}
       <div
-        className={`flex justify-center items-center ${
-          pathname !== "/map/nodes" ? "h-[80vh]" : "h-[100vh]"
+        className={`flex justify-center items-center h-[78vh] overflow-y-auto ${
+          pathname !== "/map/nodes" ? "" : "hidden"
         } `}>
         <Routes>
-          <Route path="/" element={<Page1 />} />
+          <Route path="/" element={<Home />} />
+          <Route path="benchmark" element={<BenchMark />} />
+          <Route path="initial" element={<InitialForm />} />
           <Route path="locations" element={<LocationsForm />} />
           <Route path="distances" element={<DistancesForm />} />
           <Route path="capacities" element={<CapacityForm />} />

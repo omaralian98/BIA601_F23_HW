@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useFormData from "../store";
 import { generateRandomData } from "../Tools/help_functions/genrateRandom";
 import useClose from "../hooks/useClose";
@@ -7,6 +7,7 @@ import useClose from "../hooks/useClose";
 const DropDown = () => {
   const { changeMode, mode, setFormDataStorage, setRandomData } = useFormData();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const { mouse, open, setOpen } = useClose();
 
@@ -23,7 +24,6 @@ const DropDown = () => {
     { name: "Mode 4", link: "mode4" },
     { name: "Mode 5", link: "mode5" },
     { name: "Mode 6", link: "mode6" },
-    { name: "Mode 7", link: "mode7" },
   ];
 
   return (
@@ -58,7 +58,7 @@ const DropDown = () => {
               <li
                 onClick={() => {
                   handleChangeMode(mode);
-                  navigate("/");
+                  if (pathname !== "/") navigate("/initial");
                   setFormDataStorage({
                     capacity: 0,
                     objects_count: 0,

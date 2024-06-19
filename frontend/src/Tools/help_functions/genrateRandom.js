@@ -48,11 +48,11 @@ export const generateRandomData = (mode) => {
         indicesofstartingpointes: formDataStorage.indicesofstartingpointes,
         indicesofendingpointes: formDataStorage.indicesofendingpointes,
       }),
-    ...((mode === "mode5" || mode === "mode6" || mode === "mode7") && {
+    ...((mode === "mode5" || mode === "mode6") && {
       indicesofpickinguppoints: formDataStorage.indicesofpickinguppoints,
       indicesofdroppingoffpoints: formDataStorage.indicesofdroppingoffpoints,
     }),
-    ...((mode === "mode6" || mode === "mode7") && {
+    ...(mode === "mode6" && {
       pickUpPenalties: formDataStorage.pickUpPenalties,
       dropOffPenalties: formDataStorage.dropOffPenalties,
     }),
