@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useFormData from "../../store";
 import { usePost } from "../../Tools/APIs/index";
@@ -34,21 +34,23 @@ const modesDesc = [
 
 const Home = () => {
   const navigate = useNavigate();
-  const { handleSubmit } = usePost();
+  const { handleSubmit, successfulPost } = usePost();
   const [isGenerated, setIsGenerated] = useState(false);
-  const { setFormDataToSend, formDataToSend, mode, successfulPost } =
-    useFormData();
+  const { setFormDataToSend, formDataToSend, mode } = useFormData();
 
   const handleClick = () => {
     handleSubmit(
       `http://bia601api-001-site1.ltempurl.com/api/${mode.link}`,
       formDataToSend
     );
+  };
+
+  useEffect(() => {
     if (successfulPost) {
       navigate("map/nodes");
       setIsGenerated(false);
     }
-  };
+  }, [successfulPost]);
 
   return (
     <div className="flex flex-col gap-14 h-full w-full">
