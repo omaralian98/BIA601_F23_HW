@@ -1,13 +1,15 @@
 {
   "files": {
-    "main.css": "/BIA601_F23_HW/static/css/main.a0c62f18.css",
-    "main.js": "/BIA601_F23_HW/static/js/main.7de8066d.js",
+    "main.css": "/BIA601_F23_HW/static/css/main.00e9418f.css",
+    "main.js": "/BIA601_F23_HW/static/js/main.5710642f.js",
+    "static/media/Group 1 (2).svg": "/BIA601_F23_HW/static/media/Group 1 (2).328727909f8560257bb3991d9aa43a84.svg",
+    "static/media/Group 3.svg": "/BIA601_F23_HW/static/media/Group 3.a1d0a1e2f5ae3943f5f3.svg",
     "index.html": "/BIA601_F23_HW/index.html",
-    "main.a0c62f18.css.map": "/BIA601_F23_HW/static/css/main.a0c62f18.css.map",
-    "main.7de8066d.js.map": "/BIA601_F23_HW/static/js/main.7de8066d.js.map"
+    "main.00e9418f.css.map": "/BIA601_F23_HW/static/css/main.00e9418f.css.map",
+    "main.5710642f.js.map": "/BIA601_F23_HW/static/js/main.5710642f.js.map"
   },
   "entrypoints": [
-    "static/css/main.a0c62f18.css",
-    "static/js/main.7de8066d.js"
+    "static/css/main.00e9418f.css",
+    "static/js/main.5710642f.js"
   ]
 }
