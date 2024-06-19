@@ -5,43 +5,39 @@ import { useNavigate } from "react-router-dom";
 
 const FinalPage = () => {
   const navigate = useNavigate();
-  const { handleSubmit } = usePost();
+  const { handleSubmit, successfulPost } = usePost();
   const { formDataToSend, setFormDataToSend, mode, formDataStorage } =
     useFormData();
 
-  // useEffect(() => {
-  //   setFormDataToSend({
-  //     [mode.link === "mode1" || mode.link === "mode2"
-  //       ? "capacity"
-  //       : "capacities"]:
-  //       mode.link === "mode1" || mode.link === "mode2"
-  //         ? formDataStorage.capacity
-  //         : formDataStorage.capacities,
-  //     distances: formDataStorage.locations.distances,
-  //     values: formDataStorage.objects.values,
-  //     weights: formDataStorage.objects.weights,
-  //     [mode.link !== "mode1" &&
-  //     mode.link !== "mode2" &&
-  //     mode.link !== "mode3" &&
-  //     "indicesofstartingpointes"]: formDataStorage.indicesofstartingpointes,
-  //     [mode.link !== "mode1" &&
-  //     mode.link !== "mode2" &&
-  //     mode.link !== "mode3" &&
-  //     "indicesofendingpointes"]: formDataStorage.indicesofendingpointes,
-  //     [(mode.link === "mode5" ||
-  //       mode.link === "mode6" ||
-  //       mode.link === "mode7") &&
-  //     "indicesofpickinguppoints"]: formDataStorage.indicesofpickinguppoints,
-  //     [(mode.link === "mode5" ||
-  //       mode.link === "mode6" ||
-  //       mode.link === "mode7") &&
-  //     "indicesofdroppingoffpoints"]: formDataStorage.indicesofdroppingoffpoints,
-  //     [(mode.link === "mode6" || mode.link === "mode7") && "pickUpPenalties"]:
-  //       formDataStorage.pickUpPenalties,
-  //     [(mode.link === "mode6" || mode.link === "mode7") && "dropOffPenalties"]:
-  //       formDataStorage.dropOffPenalties,
-  //   });
-  // }, []);
+  useEffect(() => {
+    setFormDataToSend({
+      [mode.link === "mode1" || mode.link === "mode2"
+        ? "capacity"
+        : "capacities"]:
+        mode.link === "mode1" || mode.link === "mode2"
+          ? formDataStorage.capacity
+          : formDataStorage.capacities,
+      distances: formDataStorage.locations.distances,
+      values: formDataStorage.objects.values,
+      weights: formDataStorage.objects.weights,
+      [mode.link !== "mode1" &&
+      mode.link !== "mode2" &&
+      mode.link !== "mode3" &&
+      "indicesofstartingpointes"]: formDataStorage.indicesofstartingpointes,
+      [mode.link !== "mode1" &&
+      mode.link !== "mode2" &&
+      mode.link !== "mode3" &&
+      "indicesofendingpointes"]: formDataStorage.indicesofendingpointes,
+      [(mode.link === "mode5" || mode.link === "mode6") &&
+      "indicesofpickinguppoints"]: formDataStorage.indicesofpickinguppoints,
+      [(mode.link === "mode5" || mode.link === "mode6") &&
+      "indicesofdroppingoffpoints"]: formDataStorage.indicesofdroppingoffpoints,
+      [mode.link === "mode6" && "pickUpPenalties"]:
+        formDataStorage.pickUpPenalties,
+      [mode.link === "mode6" && "dropOffPenalties"]:
+        formDataStorage.dropOffPenalties,
+    });
+  }, []);
 
   return (
     <div className="flex flex-col justify-center items-center text-center gap-5">
@@ -54,7 +50,7 @@ const FinalPage = () => {
             `https://80af-94-47-157-18.ngrok-free.app/api/${mode.link}`,
             formDataToSend
           );
-          navigate("/");
+          if (successfulPost) navigate("map/nodes");
         }}
         className="bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
         Submit

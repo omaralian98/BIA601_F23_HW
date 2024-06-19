@@ -182,8 +182,7 @@ const ObjectForm = () => {
           to={
             formData.names.length == objectCount
               ? mode.link === "mode5" ||
-                mode.link === "mode6" ||
-                mode.link === "mode7"
+                mode.link === "mode6"
                 ? "/objects-details"
                 : "/final"
               : ""

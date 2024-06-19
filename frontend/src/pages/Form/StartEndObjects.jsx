@@ -120,7 +120,7 @@ const StartEndObjects = () => {
           }}
           to={
             isEmpty && missedValue === true
-              ? mode.link === "mode6" || mode.link === "mode7"
+              ? mode.link === "mode6"
                 ? "/objects-pick-drop"
                 : "/final"
               : ""
