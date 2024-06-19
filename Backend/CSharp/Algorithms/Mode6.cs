@@ -86,18 +86,13 @@ public class Mode6
         switch (algorithm)
         {
             case Algorithm.Brute_Force:
-                if (n > 9)
-                    throw new Exception("Brute Force is Expensive try reducing the number of cities or using another algorithm");
-                break;
-            //return Brute_Force_TSP();
+                throw new NotImplementedException();
             case Algorithm.Greedy:
-                //return Greedy_TSP();
-                break;
+                throw new NotImplementedException();
             case Algorithm.Branch_And_Bound:
-                break;
+                throw new NotImplementedException();
             case Algorithm.Dynamic:
-                // return Dynamic_TSP();
-                break;
+                throw new NotImplementedException();
             case Algorithm.Genetic:
                 return Genetic_TSP();
             case null:
