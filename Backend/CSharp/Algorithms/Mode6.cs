@@ -6,9 +6,20 @@ namespace Algorithms;
 
 public class Mode6
 {
-    public static (int TotalDistance, int[][] BestRoutes, int TotalValue, int[][] IncludedItems) Start(int[][] distances, int[] indicesOfStartingPoints, int[] indicesOfEndingPoints, int[] indicesOfPickingUpPoints, int[] indicesOfDroppingOffPoints, int[] capacities, int[] weights, int[] values, int[] pickUpPenalties, int[] dropOffPenalties, Settings? settings = null)
+    public static (int TotalDistance, int[][] BestRoutes, int TotalValue, int[][] IncludedItems) Start(
+        int[][] distances,
+        int[] indicesOfStartingPoints,
+        int[] indicesOfEndingPoints,
+        int[] indicesOfPickingUpPoints,
+        int[] indicesOfDroppingOffPoints,
+        int[] capacities,
+        int[] weights,
+        int[] values,
+        int[] pickUpPenalties,
+        int[] dropOffPenalties,
+        Settings? settings = null)
     {
-        var (TotalValue, AllCombinations) = Mode5.StartKnapsack(capacities, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
+        var (TotalValue, AllCombinations) = Mode4.StartKnapsack(capacities, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
 
         List<Location> locations = [];
         for (int i = 0; i < indicesOfPickingUpPoints.Length; i++)
@@ -75,18 +86,13 @@ public class Mode6
         switch (algorithm)
         {
             case Algorithm.Brute_Force:
-                if (n > 9)
-                    throw new Exception("Brute Force is Expensive try reducing the number of cities or using another algorithm");
-                break;
-            //return Brute_Force_TSP();
+                throw new NotImplementedException();
             case Algorithm.Greedy:
-                //return Greedy_TSP();
-                break;
+                throw new NotImplementedException();
             case Algorithm.Branch_And_Bound:
-                break;
+                throw new NotImplementedException();
             case Algorithm.Dynamic:
-                // return Dynamic_TSP();
-                break;
+                throw new NotImplementedException();
             case Algorithm.Genetic:
                 return Genetic_TSP();
             case null:

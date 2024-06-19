@@ -251,6 +251,7 @@ public class Mode3
     {
         Random rand = new();
         int n = weights.Length;
+        int knapsacksCounter = capacities.Length;
 
         switch (algorithm)
         {
@@ -273,12 +274,9 @@ public class Mode3
 
         (int TotalValue, int[][] IncludedItems) Brute_Force_Knapsack()
         {
-            int n = weights.Length;
-            int m = capacities.Length;
-
             int maxTotalValue = 0;
-            List<int>[] bestCombination = new List<int>[m];
-            for (int i = 0; i < m; i++)
+            List<int>[] bestCombination = new List<int>[knapsacksCounter];
+            for (int i = 0; i < knapsacksCounter; i++)
             {
                 bestCombination[i] = [];
             }
@@ -286,11 +284,11 @@ public class Mode3
             void Recurse(int itemIndex, int[] currentWeights, int currentValue, List<int>[] currentCombination)
             {
                 if (itemIndex == n)
-                {
+                { // When you have considered every item
                     if (currentValue > maxTotalValue)
-                    {
+                    { // If the new combination has a higher value then save it
                         maxTotalValue = currentValue;
-                        for (int k = 0; k < m; k++)
+                        for (int k = 0; k < knapsacksCounter; k++)
                         {
                             bestCombination[k] = new List<int>(currentCombination[k]);
                         }
@@ -302,30 +300,32 @@ public class Mode3
                 Recurse(itemIndex + 1, currentWeights, currentValue, currentCombination);
 
                 // Try including the current item in each knapsack
-                for (int k = 0; k < m; k++)
+                for (int k = 0; k < knapsacksCounter; k++)
                 {
+                    // If the item fits in this knapsack
                     if (currentWeights[k] >= weights[itemIndex])
                     {
                         currentWeights[k] -= weights[itemIndex];
-                        currentCombination[k].Add(itemIndex);
+                        currentCombination[k].Add(itemIndex); // Include it
                         Recurse(itemIndex + 1, currentWeights, currentValue + values[itemIndex], currentCombination);
-                        currentCombination[k].RemoveAt(currentCombination[k].Count - 1);
+
+                        currentCombination[k].RemoveAt(currentCombination[k].Count - 1); // Then remove it
                         currentWeights[k] += weights[itemIndex];
                     }
                 }
             }
 
             // Initialize the current combination array
-            List<int>[] currentCombination = new List<int>[m];
-            for (int i = 0; i < m; i++)
+            List<int>[] currentCombination = new List<int>[knapsacksCounter];
+            for (int i = 0; i < knapsacksCounter; i++)
             {
                 currentCombination[i] = [];
             }
 
             Recurse(0, (int[])capacities.Clone(), 0, currentCombination);
 
-            int[][] result = new int[m][];
-            for (int i = 0; i < m; i++)
+            int[][] result = new int[knapsacksCounter][];
+            for (int i = 0; i < knapsacksCounter; i++)
             {
                 result[i] = [.. bestCombination[i]];
             }
@@ -334,24 +334,25 @@ public class Mode3
         }
         (int TotalValue, int[][] IncludedItems) Dynamic_Knapsack()
         {
-            int n = weights.Length;
-            int[] lengths = new int[capacities.Length + 1];
+            int[] lengths = new int[knapsacksCounter + 1];
             lengths[0] = n + 1;
-            for (int i = 0; i < capacities.Length; i++)
+            for (int i = 0; i < knapsacksCounter; i++)
             {
                 lengths[i + 1] = capacities[i] + 1;
             }
-
+            // A memo table to save the max value
             var memo = Array.CreateInstance(typeof(int), lengths);
+
+            // A memo table to save the included items
             var includedItemsMemo = Array.CreateInstance(typeof(List<int>[]), lengths);
 
             // Initialize the included items memo table
             void InitializeIncludedItemsMemo(int knapsackIndex, int[] indices)
             {
-                if (knapsackIndex == capacities.Length)
+                if (knapsackIndex == knapsacksCounter)
                 {
-                    var includedItemsArray = new List<int>[capacities.Length];
-                    for (int i = 0; i < capacities.Length; i++)
+                    var includedItemsArray = new List<int>[knapsacksCounter];
+                    for (int i = 0; i < knapsacksCounter; i++)
                     {
                         includedItemsArray[i] = [];
                     }
@@ -365,29 +366,39 @@ public class Mode3
                 }
             }
 
-            InitializeIncludedItemsMemo(0, new int[capacities.Length + 1]);
+            InitializeIncludedItemsMemo(0, new int[knapsacksCounter + 1]);
 
             // Local function to traverse DP
             void TraverseDP(int itemIndex1Based)
             {
                 void TraverseDPHelper(int knapsackIndex, int[] indices)
                 {
-                    if (knapsackIndex == capacities.Length)
+                    // If we have processed all knapsacks
+                    if (knapsackIndex == knapsacksCounter)
                     {
+                        // Update indexes array to reflect the current item being processed
                         indices[0] = itemIndex1Based;
+
+                        // Create a copy of indexes for the previous item state
                         int[] prevIndexes = (int[])indices.Clone();
                         prevIndexes[0] = itemIndex1Based - 1;
+
+                        // Get the value from memo for excluding the current item
                         int maxValue = (int)memo.GetValue(prevIndexes);
                         List<int>[] bestIncludedItems = (List<int>[])includedItemsMemo.GetValue(prevIndexes);
 
-                        for (int k = 0; k < capacities.Length; k++)
+                        // Loop through all knapsacks to check if the item can be included
+                        for (int k = 0; k < knapsacksCounter; k++)
                         {
+                            // If the item fits in the current knapsack
                             if (weights[itemIndex1Based - 1] <= indices[k + 1])
                             {
+                                // Create a new state with the current item included in knapsack k
                                 int[] newIndexes = (int[])prevIndexes.Clone();
                                 newIndexes[k + 1] -= weights[itemIndex1Based - 1];
                                 int newValue = values[itemIndex1Based - 1] + (int)memo.GetValue(newIndexes);
 
+                                // Update the max value
                                 if (newValue > maxValue)
                                 {
                                     maxValue = newValue;
@@ -406,38 +417,45 @@ public class Mode3
                         return;
                     }
 
+                    // Explore all capacities for the current knapsack
                     for (int w = 0; w <= capacities[knapsackIndex]; w++)
                     {
+                        // Update the indexes array for the current knapsack
                         indices[knapsackIndex + 1] = w;
+                        // Recurse to process the next knapsack
                         TraverseDPHelper(knapsackIndex + 1, indices);
                     }
                 }
 
-                TraverseDPHelper(0, new int[capacities.Length + 1]);
+                //Start from the first knapsack
+                TraverseDPHelper(0, new int[knapsacksCounter + 1]);
             }
 
+            // Fill the DP table
             for (int itemIndex1Based = 1; itemIndex1Based <= n; itemIndex1Based++)
             {
+                // Loop through the first dimension which contains the items
                 TraverseDP(itemIndex1Based);
             }
 
             int[] GetIndices()
             {
-                int[] indices = new int[capacities.Length + 1];
+                int[] indices = new int[knapsacksCounter + 1];
                 indices[0] = n;
-                for (int i = 0; i < capacities.Length; i++)
+                for (int i = 0; i < knapsacksCounter; i++)
                 {
                     indices[i + 1] = capacities[i];
                 }
                 return indices;
             }
 
+            // The result is in memo[n, capacities[0], capacities[1], ..., capacities[m]]
             int[] finalIndices = GetIndices();
             int maxValue = (int)memo.GetValue(finalIndices);
             List<int>[] includedItems = (List<int>[])includedItemsMemo.GetValue(finalIndices);
-            int[][] includedItemsResult = new int[capacities.Length][];
+            int[][] includedItemsResult = new int[knapsacksCounter][];
 
-            for (int i = 0; i < capacities.Length; i++)
+            for (int i = 0; i < knapsacksCounter; i++)
             {
                 includedItemsResult[i] = includedItems[i]?.ToArray() ?? [];
             }
@@ -446,7 +464,6 @@ public class Mode3
         }
         (int TotalValue, int[][] IncludedItems) Genetic_Knapsack()
         {
-            int knapsacksCounter = capacities.Length;
             settingsForGenetic ??= new SettingsForGenetic
             {
                 Fast = true,
@@ -543,9 +560,6 @@ public class Mode3
             }
         }
     }
-
-
-
 }
 
 
@@ -560,9 +574,9 @@ public class Mode3
 //        int N_KnapSacks(int[] capacities, int[] weights, int[] values)
 //        {
 //            int n = weights.Length;
-//            int[] lengths = new int[capacities.Length + 1];
+//            int[] lengths = new int[knapsacksCounter + 1];
 //            lengths[0] = n + 1;
-//            for (int i = 0; i < capacities.Length; i++)
+//            for (int i = 0; i < knapsacksCounter; i++)
 //            {
 //                lengths[i + 1] = capacities[i] + 1;
 //            }
@@ -575,7 +589,7 @@ public class Mode3
 //                void TraverseDPHelper(int knapsackIndex, int[] indices)
 //                {
 //                    // Base case: if we have processed all knapsacks
-//                    if (knapsackIndex == capacities.Length)
+//                    if (knapsackIndex == knapsacksCounter)
 //                    {
 //                        // Update indexes array to reflect the current item being processed
 //                        indices[0] = itemIndex1Based;
@@ -588,7 +602,7 @@ public class Mode3
 //                        int maxValue = (int)memo.GetValue(prevIndexes);
 
 //                        // Loop through all knapsacks to check if the item can be included
-//                        for (int k = 0; k < capacities.Length; k++)
+//                        for (int k = 0; k < knapsacksCounter; k++)
 //                        {
 //                            // If the item fits in the current knapsack
 //                            if (weights[itemIndex1Based - 1] <= indices[k + 1])
@@ -619,7 +633,7 @@ public class Mode3
 //                }
 
 //                // Initialize the recursion with the first knapsack and a fresh indexes array
-//                TraverseDPHelper(0, new int[capacities.Length + 1]);
+//                TraverseDPHelper(0, new int[knapsacksCounter + 1]);
 //            }
 
 
@@ -633,9 +647,9 @@ public class Mode3
 //            // Local function to get indexes for final result extraction
 //            int[] GetIndices()
 //            {
-//                int[] indices = new int[capacities.Length + 1];
+//                int[] indices = new int[knapsacksCounter + 1];
 //                indices[0] = n;
-//                for (int i = 0; i < capacities.Length; i++)
+//                for (int i = 0; i < knapsacksCounter; i++)
 //                {
 //                    indices[i + 1] = capacities[i];
 //                }
@@ -649,7 +663,7 @@ public class Mode3
 //        (int TotalValue, int[][] IncludedItems) N_KnapSacksWithPath(int[] capacities, int[] weights, int[] values)
 //        {
 //            int n = weights.Length;
-//            int m = capacities.Length;
+//            int m = knapsacksCounter;
 //            int[] lengths = new int[m + 1];
 //            lengths[0] = n + 1;
 //            for (int i = 0; i < m; i++)

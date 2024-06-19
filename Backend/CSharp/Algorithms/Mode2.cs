@@ -4,7 +4,6 @@ public class Mode2
 {
     public static (int TotalDistance, int[] BestRoute, int TotalValue, int[] IncludedItems) Start(int[][] distances, int capacity, int[] weights, int[] values, Settings? settings = null)
     {
-        int n = weights.Length;
         (int TotalValue, int[] IncludedItems) = Mode1.StartKnapsack(capacity, weights, values, settings?.AlgorithmForKnapsack, settings?.SettingsForGeneticKnapsack);
 
         var (newDistances, correctness) = TrimDistances(IncludedItems, distances);
@@ -27,18 +26,20 @@ public class Mode2
         int counter = includedItems.Length - 1;
 
         for (int i = 0; i < includedItems.Length; i++)
-        {
+        {// 0th item in the new array is the first item included(considering the includedItems is sorted)
             Correctness[i] = includedItems[i];
         }
 
+        // Loop from the end
         for (int i = distances.Length - 1; i >= 0 ; i--)
         {
+            
             if (counter >= 0 && includedItems[counter] == i)
-            {
+            { // If i == is included then do nothing
                 counter--;
             }
             else
-            {
+            { // Otherwise Erase this item from the array
                 array = Erase(i, i, array);
             }
         }

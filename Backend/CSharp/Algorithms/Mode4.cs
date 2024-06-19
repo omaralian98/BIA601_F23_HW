@@ -111,7 +111,7 @@ public class Mode4
         switch (algorithm)
         {
             case Algorithm.Brute_Force:
-                if (weights.Length > 20)
+                if (n > 20)
                     throw new Exception("Brute Force is Expensive try reducing the items or using another algorithm");
                 return Brute_Force_Knapsack();
             case Algorithm.Greedy:
@@ -123,7 +123,10 @@ public class Mode4
             case Algorithm.Genetic:
                 return Genetic_Knapsack();
             case null:
-                goto case Algorithm.Dynamic;
+                if (n > 20) 
+                    goto case Algorithm.Brute_Force;
+                else 
+                    goto case Algorithm.Genetic;
         }
         throw new Exception("No algorithm was found");
 

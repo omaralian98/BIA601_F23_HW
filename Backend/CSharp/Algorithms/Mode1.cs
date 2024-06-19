@@ -79,7 +79,9 @@ public class Mode1
             {
                 if (length == 1) 
                     return list.Select(city => new int[] { city });
-
+                // To understand this code you have to follow an example 
+                // And learn what SelectMany does
+                // https://stackoverflow.com/a/13035259/21485288
                 return GetPermutations(list, length - 1)
                     .SelectMany(t => list.Where(e => !t.Contains(e)), (t1, t2) => t1.Concat(new int[] { t2 }).ToArray());
             }
@@ -92,12 +94,12 @@ public class Mode1
             int totalDistance = 0;
             int[] BestRoute = new int[n + 1];
 
-            var city = rand.Next(n);
-            visited[city] = true;
-            BestRoute[0] = BestRoute[^1] = city;
+            var city = rand.Next(n); // Choose a random city to start the tour from
+            visited[city] = true; // Flag this city as visited
+            BestRoute[0] = BestRoute[^1] = city; // Set first and last cities of the tour
 
             for (int i = 1; i < n; i++)
-            {
+            { // Visit the closest unvisited city
                 int index = -1;
                 int distance = int.MaxValue;
                 for (int j = 0; j < n; j++)
@@ -118,7 +120,7 @@ public class Mode1
         (int TotalDistance, int[] BestRoute) Dynamic_TSP()
         {
             int n = distances.Length;
-            var memo = new Dictionary<(int, int), (int, int)>();
+            Dictionary<(int current, int visited), (int cost, int bestNext)> memo = [];
             var path = new List<int>();
 
             bool IsOver(int visited, int n) => visited == (1 << n) - 1;
@@ -136,7 +138,7 @@ public class Mode1
 
                 if (memo.TryGetValue(key, out var value))
                 {
-                    return value.Item1;
+                    return value.cost;
                 }
 
                 int minDistance = int.MaxValue;
@@ -168,7 +170,7 @@ public class Mode1
                 {
                     path.Add(current);
                     (int, int) key = (current, visited);
-                    current = memo[key].Item2;
+                    current = memo[key].bestNext;
                     visited = AddNode(visited, current);
                 }
                 path.Add(current);
@@ -198,14 +200,9 @@ public class Mode1
             double eliteRate = settingsForGenetic.EliteRate;
             int maxIterations = settingsForGenetic.MaxIterations;
             var population = Initialize(populationSize);
-            List<(int fitness, int[] solution)> ind = [.. population.Select(ch => (Fitness(ch), ch))];
-            ind.Sort((a, b) => a.fitness.CompareTo(b.fitness));
 
             int noChangeCounter = 0;
             int topElite = (int)(eliteRate * populationSize);
-            int mutationCount = 0;
-            int matingCount = 0;
-
             int bestFitness = int.MaxValue;
             int[] bestSolution = null;
 
@@ -223,12 +220,10 @@ public class Mode1
                     int c1 = rand.Next(0, topElite);
                     int c2 = rand.Next(0, topElite);
                     population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
-                    matingCount++;
                     if (rand.NextDouble() < mutationProbability)
                     {
                         int c = rand.Next(0, topElite);
                         population.Add(Mutate(individualScores[c].solution));
-                        mutationCount++;
                     }
                 }
                 noChangeCounter = individualScores[0].fitness == bestFitness ? noChangeCounter + 1 : 0;
@@ -309,55 +304,46 @@ public class Mode1
             {
                 int numberOfCrossPoints = settingsForGenetic.NumberOfCrossOverPoints;
                 int[] child = new int[n];
+                Array.Fill(child, -1);  // Initialize with invalid values
 
-                a.CopyTo(child, 0);
-                rand.Shuffle(child);
+                SortedSet<int> points = [n - 1];
+                while (points.Count < numberOfCrossPoints)
+                {
+                    points.Add(rand.Next(1, n));
+                }
+                bool swap = false;
+                int lastIndex = 0;
+                bool[] taken = new bool[n];
+                HashSet<int> indices = [];
+                foreach (var index in points)
+                {
+                    for (int i = lastIndex; i < index; i++)
+                    {
+                        if (swap && taken[b[i]]) continue;
+                        if (!swap && taken[a[i]]) continue;
+                        child[i] = swap ? b[i] : a[i];
+                        taken[child[i]] = true;
+                    }
+                    swap = !swap;
+                    lastIndex = index;
+                }
 
-                //Array.Fill(child, -1);  // Initialize with invalid values
-
-
-                //SortedSet<int> points = [n - 1];
-                //while (points.Count < numberOfCrossPoints)
-                //{
-                //    points.Add(rand.Next(1, n));
-                //}
-
-
-
-                //bool swap = false;
-                //int lastIndex = 0;
-                //bool[] taken = new bool[n];
-                //HashSet<int> indices = [];
-                //foreach (var index in points)
-                //{
-                //    for (int i = lastIndex; i < index; i++)
-                //    {
-                //        if (swap && taken[b[i]]) continue;
-                //        if (!swap && taken[a[i]]) continue;
-                //        child[i] = swap ? b[i] : a[i];
-                //        taken[child[i]] = true;
-                //    }
-                //    swap = !swap;
-                //    lastIndex = index;
-                //}
-
-                //// Fill in any missing values
-                //for (int j = 0; j < n; j++)
-                //{
-                //    if (child[j] == -1)
-                //    {
-                //        for (int k = 0; k < n; k++)
-                //        {
-                //            if (!taken[k])
-                //            {
-                //                child[j] = k;
-                //                taken[k] = true;
-                //                break;
-                //            }
-                //        }
-                //    }
-                //}
-
+                // Fill in any missing values
+                for (int j = 0; j < n; j++)
+                {
+                    if (child[j] == -1)
+                    {
+                        for (int k = 0; k < n; k++)
+                        {
+                            if (!taken[k])
+                            {
+                                child[j] = k;
+                                taken[k] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
                 return child;
             }
         }
@@ -388,7 +374,8 @@ public class Mode1
 
         (int TotalValue, int[] IncludedItems) Brute_Force_Knapsack()
         {
-            bool IsIncluded(int combination, int currentItem) => (combination & (1 << currentItem)) != 0;
+            bool IsIncluded(int combination, int currentItem) 
+                => (combination & (1 << currentItem)) != 0;
             int maxValue = 0;
             List<int> bestCombination = [];
 
@@ -399,7 +386,8 @@ public class Mode1
                 int totalValue = 0;
                 List<int> solution = [];
 
-                // Check each item to see if it's included in the current combination
+                // Check each item to see if it's included
+                // in the current combination
                 for (int itemIndex = 0; itemIndex < n; itemIndex++)
                 {
                     if (IsIncluded(combination, itemIndex))
@@ -410,7 +398,8 @@ public class Mode1
                     }
                 }
 
-                // If the current combination is better, update the best combination
+                // If the current combination is better,
+                // update the best combination
                 if (totalWeight <= capacity && totalValue > maxValue)
                 {
                     maxValue = totalValue;
@@ -434,9 +423,12 @@ public class Mode1
                 ...
                 ...
                 1111111111 => 2^10 - 1
-                So we have to loop from 0 to 1023 and test each one to find the best one.
+                So we have to loop from 0 to 1023 and test each one 
+                to find the best one.
+
                 This is what this line does "for (int i = 0; i < (1 << n); i++)"
-                (1 << n) = (1 << 10) = 10000000000 = 1024 the range is: [0, 1024[, and that's what we want
+                (1 << n) = (1 << 10) = 10000000000 = 1024 the range is:
+                [0, 1024[, and that's what we want
              */
         }
         (int TotalValue, int[] IncludedItems) Dynamic_Knapsack()
@@ -721,14 +713,6 @@ public class Mode1
                 {
                     points.Add(rand.Next(1, n));
                 }
-
-                HashSet<int> indices = []; 
-                while (indices.Count < numberOfCrossPoints)
-                {
-                    indices.Add(rand.Next(n));
-                }
-                List<int> point = [.. indices];
-                point.Sort();
 
                 int lastIndex = 0;
                 foreach (var index in points)
