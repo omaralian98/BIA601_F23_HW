@@ -62,7 +62,7 @@ const CapacityForm = () => {
           </div>
         ))}
       </div>
-      <div className="w-full flex gap-4 h-fit justify-around">
+      <div className="w-full flex gap-4 h-fit justify-around flex-wrap">
         <button
           onClick={() => {
             addTruckCapacities(formData);

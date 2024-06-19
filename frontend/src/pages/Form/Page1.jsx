@@ -51,7 +51,7 @@ const Page1 = () => {
   };
 
   return (
-    <div className="flex justify-center items-center p-6 gap-4 w-full h-full bg-slate-200 border border-gray-400 rounded-lg flex-wrap">
+    <div className="flex justify-center items-center p-6 gap-4 w-full h-full bg-slate-200 border border-gray-400 rounded-lg flex-wrap overflow-y-auto">
       <ToastContainer
         position="top-center"
         autoClose={2000}
@@ -114,7 +114,7 @@ const Page1 = () => {
           />
         </div>
       </div>
-      <div className="w-full flex gap-4 justify-around">
+      <div className="w-full flex gap-4 justify-around flex-wrap">
         <Link
           to="map/nodes"
           className="text-center text-lg bg-blue-600 px-8 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">

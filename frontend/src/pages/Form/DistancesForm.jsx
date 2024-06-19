@@ -28,7 +28,6 @@ const DistancesForm = () => {
   const { formDataStorage, addLoctaionsTime, mode } = useFormData();
   const locations = formDataStorage.locations.locations_name;
   const distances = [];
-  console.log(mode);
 
   let counter = 0;
 
@@ -191,7 +190,7 @@ const DistancesForm = () => {
           )
         )}
       </div>
-      <div className="w-full flex justify-around gap-4">
+      <div className="w-full flex justify-around gap-4 flex-wrap">
         <button
           className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300"
           onClick={() => navigate(-1)}>

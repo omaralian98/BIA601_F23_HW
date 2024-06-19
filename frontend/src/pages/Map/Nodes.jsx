@@ -2,31 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import useFormData from "../../store";
 
-// const preprocessLinks = (links) => {
-//   const uniqueLinks = {};
-
-//   links.forEach((link) => {
-//     const key = `${link.source}-${link.target}`;
-//     const reverseKey = `${link.target}-${link.source}`;
-
-//     if (uniqueLinks[key]) {
-//       uniqueLinks[key] = Math.min(uniqueLinks[key], link.distance);
-//     } else if (uniqueLinks[reverseKey]) {
-//       uniqueLinks[reverseKey] = Math.min(
-//         uniqueLinks[reverseKey],
-//         link.distance
-//       );
-//     } else {
-//       uniqueLinks[key] = link.distance;
-//     }
-//   });
-
-//   return Object.entries(uniqueLinks).map(([key, distance]) => {
-//     const [source, target] = key.split("-");
-//     return { source: source, target: target, distance: distance };
-//   });
-// };
-
 const Maps = ({ multipleMaps }) => {
   return (
     <div className="flex gap-5 flex-wrap w-[100vw] h-[100vh] overflow-auto">
@@ -78,18 +53,6 @@ export const Graph = ({ map }) => {
     );
   });
 
-  // const initialLinks = formDataStorage?.locations?.distances?.flatMap(
-  //   (object) =>
-  //     object
-  //       .filter((e) => e.start !== e.end)
-  //       .map((element) => ({
-  //         source: element.start,
-  //         target: element.end,
-  //         distance: element.distance,
-  //       }))
-  // );
-  // const linksData = preprocessLinks(initialLinks);
-
   useEffect(() => {
     const nodes = nodesData.map((node, index) => ({ id: index, ...node }));
     const links = temp2.map((link) => ({
@@ -118,8 +81,6 @@ export const Graph = ({ map }) => {
       simulation.stop();
     };
   }, [locations, map]);
-
-  // const sourceNodeIds = new Set(links.map((link) => link.source.id));
 
   return (
     <div className="flex justify-center items-center overflow-auto">

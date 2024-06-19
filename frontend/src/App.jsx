@@ -12,6 +12,7 @@ import Maps from "./pages/Map/Nodes";
 import StartEndTrucks from "./pages/Form/StartEndTrucks";
 import StartEndObjects from "./pages/Form/StartEndObjects";
 import PickUpDropOff from "./pages/Form/PickUpDropOff";
+import Home from "./pages/Home/Home";
 
 function App() {
   const { pathname } = useLocation();
@@ -21,11 +22,12 @@ function App() {
     <div className="App h-full p-4 flex flex-col gap-3">
       {pathname !== "/map/nodes" && <NavBar />}
       <div
-        className={`flex justify-center items-center ${
-          pathname !== "/map/nodes" ? "h-[80vh]" : "h-[100vh]"
+        className={`flex justify-center items-center h-[80vh] overflow-y-auto ${
+          pathname !== "/map/nodes" ? "" : "hidden"
         } `}>
         <Routes>
-          <Route path="/" element={<Page1 />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/initial" element={<Page1 />} />
           <Route path="locations" element={<LocationsForm />} />
           <Route path="distances" element={<DistancesForm />} />
           <Route path="capacities" element={<CapacityForm />} />
