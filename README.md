@@ -31,7 +31,7 @@ This mode introduces multiple salesmen, each with their own knapsack, distributi
 
 ### Mode 4
 
-Here, warehouses are introduced, with each vehicle having a distinct starting and ending point. The solution involves using dummy nodes to represent these points, ensuring that each route begins and ends appropriately.
+Here, warehouses are introduced, with each vehicle having a distinct starting and ending point.
 
 ### Mode 5
 
