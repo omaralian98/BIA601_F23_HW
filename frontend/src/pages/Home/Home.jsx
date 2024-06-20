@@ -66,7 +66,9 @@ const modesDesc = [
 const Home = () => {
   const navigate = useNavigate();
   const { handleSubmit, successfulPost } = usePost();
-  const [isGenerated, setIsGenerated] = useState(false);
+  const [isGeneratedRandom, setIsGeneratedRandom] = useState(false);
+  const [preDefinedCases, setPreDefinedCases] = useState(false);
+
   const {
     setFormDataToSend,
     formDataToSend,
@@ -74,10 +76,11 @@ const Home = () => {
     addLocations,
     formDataStorage,
     addLoctaionsTime,
+    changeMode,
   } = useFormData();
 
   useEffect(() => {
-    setIsGenerated(false);
+    setIsGeneratedRandom(false);
     setFormDataToSend(null);
   }, [mode.link]);
 
@@ -119,7 +122,7 @@ const Home = () => {
   useEffect(() => {
     if (successfulPost) {
       navigate("map/nodes");
-      setIsGenerated(false);
+      setIsGeneratedRandom(false);
     }
   }, [successfulPost]);
 
@@ -138,7 +141,6 @@ const Home = () => {
         </p>
       </div>
       <div className="mx-auto text-center w-2/3 space-y-6">
-        <h1 className="text-5xl text-gray-700 font-bold">About</h1>
         <p className="text-gray-700 bg-gray-300 rounded-xl p-10 text-lg">
           This project addresses several optimization challenges, including
           various scenarios involving the knapsack problem and the traveling
@@ -146,17 +148,19 @@ const Home = () => {
           the frontend is built with React.
         </p>
       </div>
-      <div className="flex gap-10 justify-evenly max-sm:flex-col items-center">
+      <div className="flex gap-10 justify-evenly max-md:flex-col items-center">
         <div className="flex gap-4 flex-col justify-center items-center">
           <button
             onClick={() => {
               setFormDataToSend(randomData[getRandomInt(0, 14)]);
-              setIsGenerated(true);
+              changeMode("mode6");
+              setPreDefinedCases(true);
+              setIsGeneratedRandom(false);
             }}
             className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-blue-500 hover:bg-blue-400 text-center rounded-xl">
-            Try it with random data
+            Try it with pre-defined cases
           </button>
-          {isGenerated && (
+          {preDefinedCases && (
             <button
               onClick={handleClick}
               className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-blue-500 hover:bg-blue-400 text-center rounded-xl">
@@ -164,19 +168,22 @@ const Home = () => {
             </button>
           )}
         </div>
+        <h1 className="text-4xl font-semibold">OR</h1>
+
         <div className="flex gap-4 flex-col justify-center items-center">
           <button
             onClick={() => {
               setFormDataToSend(generateRandomData(mode.link));
-              setIsGenerated(true);
+              setIsGeneratedRandom(true);
+              setPreDefinedCases(false);
             }}
-            className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-black hover:bg-black text-center rounded-xl">
-            Try it with random data
+            className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-black hover:opacity-80 text-center rounded-xl">
+            Try it with random cases
           </button>
-          {isGenerated && (
+          {isGeneratedRandom && (
             <button
               onClick={handleClick}
-              className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-black hover:bg-black text-center rounded-xl">
+              className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-black hover:opacity-80 text-center rounded-xl">
               See results on the map
             </button>
           )}

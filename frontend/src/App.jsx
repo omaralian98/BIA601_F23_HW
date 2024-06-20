@@ -13,6 +13,8 @@ import PickUpDropOff from "./pages/Form/PickUpDropOff";
 import Home from "./pages/Home/Home";
 import InitialForm from "./pages/Form/InitialForm";
 import BenchMark from "./pages/BenchMark/BenchMark";
+import Settings from "./pages/Settings/Settings";
+import AdvancedSettings from "./pages/Settings/AdvancedSettings";
 
 function App() {
   const { pathname } = useLocation();
@@ -33,6 +35,10 @@ function App() {
           <Route path="objects-details" element={<StartEndObjects />} />
           <Route path="objects-pick-drop" element={<PickUpDropOff />} />
           <Route path="final" element={<FinalPage />} />
+          <Route path="settings">
+            <Route index element={<Settings />} />
+            <Route path="/settings/advanced" element={<AdvancedSettings />} />
+          </Route>
           <Route path="map">
             <Route path="/map/nodes" element={<Maps />} />
           </Route>

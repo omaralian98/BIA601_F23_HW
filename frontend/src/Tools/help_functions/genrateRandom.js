@@ -72,7 +72,8 @@ export const generateRandomData = (mode) => {
       : {}),
     settings: {
       algorithmForTSP: 4,
-	  algorithmForKnapsack: 4
+      algorithmForKnapsack: 4,
+
     },
   };
 };
