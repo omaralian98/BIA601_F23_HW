@@ -303,6 +303,13 @@ namespace API.Controllers
             try
             {
                 var (TotalDistance, BestRoutes, TotalValue, IncludedItems) = Mode4.Start(request.Distances, request.indicesOfStartingPoints, request.indicesOfEndingPoints, request.Capacities, request.Weights, request.Values, request.Settings);
+                logger.LogInformation("Mapping");
+                string x = "";
+                for (int i = 0; i < IncludedItems.Length; i++)
+                {
+                    x += string.Join(", ", IncludedItems[i]) + "\n";
+                }
+                logger.LogInformation(x);
                 return ResponseModelForMode3AMore.Map(TotalDistance, BestRoutes, TotalValue, IncludedItems, request.Distances, request.Capacities, request.Values);
             }
             catch (Exception e)
@@ -566,7 +573,21 @@ namespace API.Controllers
             Truck[] trucks = new Truck[capacities.Length];
             for (int i = 0; i < trucks.Length; i++)
             {
-                trucks[i] = new Truck(i, capacities[i], includedItems[i], bestRoutes[i], values, distances);
+                int[] inclu = [];
+                int[] bes = [];  
+                try
+                {
+                    inclu = includedItems[i];
+                }
+                catch { }
+                try
+                {
+                    bes = bestRoutes[i];
+                }
+                catch { }
+
+                
+                trucks[i] = new Truck(i, capacities[i], inclu, bes, values, distances);
             }
             return new ResponseModelForMode3AMore
             {
@@ -590,8 +611,8 @@ namespace API.Controllers
         public int Capacity { get; set; }
         public int Value { get; set; }
         public int Distance { get; set; }
-        public int[] IncludedItems { get; set; } = [];
-        public int[] Route { get; set; } = [];
+        public int[]? IncludedItems { get; set; } = [];
+        public int[]? Route { get; set; } = [];
 
         public Truck(int id, int capacity, int[] includedItems, int[] route, int[] Values, int[][] distances)
         {
