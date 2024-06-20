@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 
 const Maps = () => {
   const { response, mode, setFormDataToSend } = useFormData();
-
   const multipleMaps =
     mode.link === "mode1" || mode.link === "mode2"
       ? [response.bestRoute]
@@ -63,6 +62,11 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
     formDataStorage?.objects?.names?.length > 0
       ? includedItems?.map((e) => formDataStorage?.objects?.names[parseInt(e)])
       : includedItems;
+
+  const path =
+    formDataStorage?.locations?.locations_name?.length > 0
+      ? map.map((e) => formDataStorage?.locations?.locations_name[parseInt(e)])
+      : map;
 
   const nodesData = formDataStorage?.locations?.locations_name?.map((e) => ({
     id: e,
@@ -125,10 +129,10 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
 
   return (
     <div className="flex flex-wrap p-3 justify-center items-center overflow-auto w-full h-full border-2 border-black bg-gray-100">
-      <div className="w-full flex gap-5 justify-around">
-        <div className=" bg-slate-200 rounded-xl text-center p-3">
+      <div className="w-full flex gap-5 justify-around flex-wrap">
+        <div className="w-1/3 max-md:w-[90%] mx-auto bg-slate-200 rounded-xl text-center p-3">
           <h1 className="text-2xl font-bold">Included items:</h1>
-          <div className="flex gap-3">
+          <div className="flex gap-3 justify-center flex-wrap">
             {` { `}
             {itemNames?.map(
               (e) => e && <p className="text-lg font-semibold">{e}</p>
@@ -137,14 +141,24 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
           </div>
         </div>
 
-        <div className=" bg-slate-200 rounded-xl text-center p-3">
+        <div className="w-1/3 max-md:w-[90%] mx-auto bg-slate-200 rounded-xl text-center p-3">
           <h1 className="text-2xl font-bold">Total distance:</h1>
-          <div className="flex gap-3">{`{ ${totalDistance} }`}</div>
+          <div className="flex gap-3 justify-center">{`{ ${totalDistance} }`}</div>
         </div>
 
-        <div className=" bg-slate-200 rounded-xl text-center p-3">
+        <div className="w-1/3 max-md:w-[90%] mx-auto bg-slate-200 rounded-xl text-center p-3">
           <h1 className="text-2xl font-bold">Total value:</h1>
-          <div className="flex gap-3">{`{ ${totalValue} }`}</div>
+          <div className="flex gap-3 justify-center">{`{ ${totalValue} }`}</div>
+        </div>
+        <div className="w-1/3 max-md:w-[90%] mx-auto bg-slate-200 rounded-xl text-center p-3">
+          <h1 className="text-2xl font-bold">Path:</h1>
+          <div className="flex gap-3 justify-center flex-wrap">
+            {`[`}
+            {path.map((e) => (
+              <p className="text-lg font-semibold">{e},</p>
+            ))}
+            {`]`}
+          </div>
         </div>
       </div>
       <svg
