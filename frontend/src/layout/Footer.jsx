@@ -10,7 +10,7 @@ const Footer = () => {
             "omar_192751",
             "mohannad_192707",
             "ghena_114233",
-            "Farah_194030",
+            "farah_194030",
           ]}
         />
       </div>

@@ -6,7 +6,6 @@ import DistancesForm from "./pages/Form/DistancesForm";
 import FinalPage from "./pages/Form/FinalPage";
 import LocationsForm from "./pages/Form/LocationsForm";
 import ObjectForm from "./pages/Form/ObjectsForm";
-import useFormData from "./store";
 import Maps from "./pages/Map/Nodes";
 import StartEndTrucks from "./pages/Form/StartEndTrucks";
 import StartEndObjects from "./pages/Form/StartEndObjects";
@@ -17,13 +16,12 @@ import BenchMark from "./pages/BenchMark/BenchMark";
 
 function App() {
   const { pathname } = useLocation();
-  const { response, mode } = useFormData();
 
   return (
     <div className="App p-4 flex flex-col gap-3 justify-between">
       {pathname !== "/map/nodes" && <NavBar />}
       <div
-        className={`flex justify-center items-center h-[78vh] overflow-y-auto ${
+        className={`flex justify-center items-center overflow-y-auto ${
           pathname !== "/map/nodes" ? "" : "hidden"
         } `}>
         <Routes>
@@ -39,18 +37,7 @@ function App() {
           <Route path="objects-pick-drop" element={<PickUpDropOff />} />
           <Route path="final" element={<FinalPage />} />
           <Route path="map">
-            <Route
-              path="/map/nodes"
-              element={
-                <Maps
-                  multipleMaps={
-                    (mode === "mode1" || mode === "mode2") && response
-                      ? [response?.bestRoute]
-                      : response?.trucks
-                  }
-                />
-              }
-            />
+            <Route path="/map/nodes" element={<Maps />} />
           </Route>
         </Routes>
       </div>
