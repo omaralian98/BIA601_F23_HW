@@ -47,12 +47,6 @@ public class Mode6
             Item[][] items = new Item[combination.Length][];
             for (int j = 0; j < combination.Length; j++)
             {
-                Console.WriteLine("H");
-                foreach (var item in combination[j])
-                {
-                    Console.WriteLine(string.Join(", ", item));
-                }
-
                 items[j] = combination[j].Select(index => new Item
                 {
                     Value = values[index],

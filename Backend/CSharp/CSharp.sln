@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Algorithms", "Algorithms\Al
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp8", "..\..\..\ConsoleApp8\ConsoleApp8\ConsoleApp8.csproj", "{59B0EF0E-49A8-4276-9DD3-8986FD869A37}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0412BD8-0B38-4CED-A99D-CF0EDECDA4A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{59B0EF0E-49A8-4276-9DD3-8986FD869A37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{59B0EF0E-49A8-4276-9DD3-8986FD869A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{59B0EF0E-49A8-4276-9DD3-8986FD869A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{59B0EF0E-49A8-4276-9DD3-8986FD869A37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
