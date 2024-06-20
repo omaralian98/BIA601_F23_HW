@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import useFormData from "../../store";
 import Input from "../../components/Input";
-import { usePost } from "../../Tools/APIs";
 
 const AdvancedSettings = () => {
   const { changeSettings } = useFormData();
-  const [formData, setFormData] = useState(null);
+  const [formData, setFormData] = useState({});
 
   const handleChange = (e, name, key) => {
-    setFormData((prev) => ({
-      ...prev,
+    setFormData({
+      ...formData,
       [key]: {
-        ...(prev[key] ? prev[key] : {}),
+        ...(formData[key] ? formData[key] : {}),
         [name]: parseInt(e.target.value),
       },
-    }));
+    });
   };
 
   return (
