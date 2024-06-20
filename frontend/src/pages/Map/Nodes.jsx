@@ -64,8 +64,8 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
   let temp2 = [];
 
   const itemNames =
-    formDataStorage?.objects?.names.length > 0
-      ? includedItems.map((e) => formDataStorage?.objects?.names[parseInt(e)])
+    formDataStorage?.objects?.names?.length > 0
+      ? includedItems?.map((e) => formDataStorage?.objects?.names[parseInt(e)])
       : includedItems;
 
   const nodesData = formDataStorage?.locations?.locations_name?.map((e) => ({
@@ -99,8 +99,8 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
   });
 
   useEffect(() => {
-    const nodes = nodesData.map((node) => ({ id: node.id, ...node }));
-    const links = temp2.map((link) => ({
+    const nodes = nodesData?.map((node) => ({ id: node.id, ...node }));
+    const links = temp2?.map((link) => ({
       source: nodes.find((n) => n.id === link.source),
       target: nodes.find((n) => n.id === link.target),
       distance: link.distance,
@@ -134,7 +134,7 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
           <h1 className="text-2xl font-bold">Included items:</h1>
           <div className="flex gap-3">
             {` { `}
-            {itemNames.map((e) => (
+            {itemNames?.map((e) => (
               <p className="text-lg font-semibold">{e}</p>
             ))}
             {` } `}
@@ -168,7 +168,7 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
             <path d="M0,0 L0,6 L9,3 z" fill="black" />
           </marker>
         </defs>
-        {links.map((link, index) => (
+        {links?.map((link, index) => (
           <line
             key={index}
             x1={link.source.x}
@@ -179,7 +179,7 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
             markerEnd="url(#arrowhead)"
           />
         ))}
-        {nodes.map((node, index) => (
+        {nodes?.map((node, index) => (
           <g key={index}>
             <circle cx={node.x} cy={node.y} r={7} fill={` red`} />
             <text

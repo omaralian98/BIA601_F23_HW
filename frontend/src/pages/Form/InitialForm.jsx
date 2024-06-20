@@ -34,10 +34,10 @@ const InitialForm = () => {
         ? "capacity"
         : "trucks_count"]:
         mode.link === "mode1" || mode.link === "mode2"
-          ? formDataStorage.capacity
-          : formDataStorage.trucks_count,
-      objects_count: formDataStorage.objects_count,
-      locations_count: formDataStorage.locations_count,
+          ? parseInt(formDataStorage.capacity)
+          : parseInt(formDataStorage.trucks_count),
+      objects_count: parseInt(formDataStorage.objects_count),
+      locations_count: parseInt(formDataStorage.locations_count),
     });
   }, [mode]);
 

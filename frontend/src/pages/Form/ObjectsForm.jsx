@@ -74,8 +74,8 @@ const ObjectForm = () => {
     });
     setObjectSpecs({
       name: "",
-      value: "",
-      weight: "",
+      value: 0,
+      weight: 0,
     });
   };
 
@@ -120,7 +120,10 @@ const ObjectForm = () => {
             name="value in Dollars($)"
             value={objectSpecs["value"]}
             onChange={(e) =>
-              setObjectSpecs((prev) => ({ ...prev, value: e.target.value }))
+              setObjectSpecs((prev) => ({
+                ...prev,
+                value: parseInt(e.target.value),
+              }))
             }
             onKeyDown={handleKeyDown}
           />
@@ -132,7 +135,10 @@ const ObjectForm = () => {
             name="weight in kilograms(kg)"
             value={objectSpecs["weight"]}
             onChange={(e) =>
-              setObjectSpecs((prev) => ({ ...prev, weight: e.target.value }))
+              setObjectSpecs((prev) => ({
+                ...prev,
+                weight: parseInt(e.target.value),
+              }))
             }
             onKeyDown={handleKeyDown}
           />
@@ -181,8 +187,7 @@ const ObjectForm = () => {
           }}
           to={
             formData.names.length == objectCount
-              ? mode.link === "mode5" ||
-                mode.link === "mode6"
+              ? mode.link === "mode5" || mode.link === "mode6"
                 ? "/objects-details"
                 : "/final"
               : ""
