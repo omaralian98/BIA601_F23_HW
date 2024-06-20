@@ -9,13 +9,13 @@ const Maps = () => {
       ? [response.bestRoute]
       : response.trucks;
 
+  console.log(multipleMaps);
+
   return (
-    <div className="flex gap-5 flex-wrap w-screen h-screen overflow-auto">
-      {multipleMaps?.length > 1
-        ? multipleMaps?.map((map, index) => (
-            <Graph key={index} map={map?.route} />
-          ))
-        : multipleMaps?.map((map, index) => <Graph key={index} map={map} />)}
+    <div className="flex flex-wrap gap-5 w-screen h-screen p-4">
+      {multipleMaps?.map((map, index) => (
+        <Graph key={index} map={map?.route || map} />
+      ))}
     </div>
   );
 };
@@ -23,6 +23,21 @@ const Maps = () => {
 export default Maps;
 
 export const Graph = ({ map }) => {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setWindowHeight(windowHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [windowWidth, windowHeight]);
+
   const { formDataStorage } = useFormData();
   const [nodes, setNodes] = useState([]);
   const [links, setLinks] = useState([]);
@@ -35,7 +50,7 @@ export const Graph = ({ map }) => {
     label: e,
   }));
 
-  for (let i = 0; i < map.length; i++) {
+  for (let i = 0; i < map?.length; i++) {
     let start;
     let end;
     start = formDataStorage?.locations?.locations_name[parseInt(map[i])];
@@ -61,7 +76,7 @@ export const Graph = ({ map }) => {
   });
 
   useEffect(() => {
-    const nodes = nodesData.map((node, index) => ({ id: node.id, ...node }));
+    const nodes = nodesData.map((node) => ({ id: node.id, ...node }));
     const links = temp2.map((link) => ({
       source: nodes.find((n) => n.id === link.source),
       target: nodes.find((n) => n.id === link.target),
@@ -78,7 +93,7 @@ export const Graph = ({ map }) => {
           .id((d) => d.id)
       )
       .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(300, 300))
+      .force("center", d3.forceCenter(windowWidth / 2, windowHeight / 2))
       .on("tick", () => {
         setNodes([...nodes]);
         setLinks([...links]);
@@ -90,8 +105,12 @@ export const Graph = ({ map }) => {
   }, [nodesData, temp2]);
 
   return (
-    <div className="flex justify-center items-center overflow-auto w-full h-full">
-      <svg ref={svgRef} width={1200} height={1200} className="overflow-auto">
+    <div className="flex justify-center items-center overflow-auto w-full h-full border-2 border-black bg-gray-100">
+      <svg
+        ref={svgRef}
+        width={windowWidth}
+        height={windowHeight}
+        className="overflow-auto my-auto">
         <defs>
           <marker
             id="arrowhead"
@@ -117,7 +136,12 @@ export const Graph = ({ map }) => {
         ))}
         {nodes.map((node, index) => (
           <g key={index}>
-            <circle cx={node.x} cy={node.y} r={7} fill="red" />
+            <circle
+              cx={node.x}
+              cy={node.y}
+              r={7}
+              fill={`${index === 0 ? "green" : "red"}`}
+            />
             <text
               x={node.x}
               y={node.y}
