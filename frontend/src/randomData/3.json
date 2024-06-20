@@ -22,6 +22,7 @@
   "pickUpPenalties": [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
   "dropOffPenalties": [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
   "settings": {
-    "algorithmForTSP": 4
+    "algorithmForTSP": 4,
+    "algorithmForKnapsack": 4
   }
 }

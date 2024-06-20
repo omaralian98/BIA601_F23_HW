@@ -16,7 +16,18 @@ const useFormData = create((set) => ({
   setFormDataToSend: (formData) =>
     set((store) => ({
       ...store,
-      formDataToSend: formData,
+      formDataToSend: { ...store.formDataToSend, ...formData },
+    })),
+  changeSettings: (settings) =>
+    set((store) => ({
+      ...store,
+      formDataToSend: {
+        ...store.formDataToSend,
+        settings: {
+          ...store.formDataToSend.settings,
+          ...settings,
+        },
+      },
     })),
   formDataStorage: {
     capacity: 0,

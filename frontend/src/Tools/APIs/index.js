@@ -34,9 +34,11 @@ export const useGet = (mode) => {
 export const usePost = () => {
   const { setResponse } = useFormData();
   const [successfulPost, setSuccessfulPost] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (mode, postData) => {
     setSuccessfulPost(false);
+    setIsLoading(true);
     axios
       .post(`${baseURL}/api/${mode}`, postData, {
         headers: {
@@ -51,12 +53,14 @@ export const usePost = () => {
         if (response.data) {
           setResponse(response.data);
           setSuccessfulPost(true);
+          setIsLoading(false);
         }
       })
       .catch((error) => {
         console.error("Error posting data:", error.message);
+        setIsLoading(false);
       });
   };
 
-  return { handleSubmit, successfulPost };
+  return { handleSubmit, successfulPost, isLoading };
 };

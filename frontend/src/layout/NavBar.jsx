@@ -10,6 +10,11 @@ const NavBar = () => {
         <img src={logo} alt="" className="object-cover rounded-xl" />
       </Link>
       <DropDown />
+      <Link
+        to="settings"
+        className="text-xl px-4 py-2 bg-yellow-500 font-semibold rounded-xl text-white">
+        Settings
+      </Link>
     </nav>
   );
 };
