@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import useFormData from "../../store";
 import base64 from "base-64";
 
-const baseURL = process.env.REACT_APP_MY_VAR
-  ? "http://localhost:5000"
+const baseURL = process.env.REACT_APP_API_URL
+  ? process.env.REACT_APP_API_URL
   : "https://bia601api-001-site1.ltempurl.com";
 
 const username = "11182471";

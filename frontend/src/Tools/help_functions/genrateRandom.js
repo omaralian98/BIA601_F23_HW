@@ -16,6 +16,7 @@ const getRandom2DArrayWithZeroRadius = (size, min, max) => {
 };
 
 export const generateRandomData = (mode) => {
+  const isModeThreeOrFour = mode === "mode3" || mode === "mode4";
   const numOfItems = getRandomInt(1, 10);
   const numOfTrucks = getRandomInt(1, 10);
   const formDataStorage = {
@@ -23,13 +24,21 @@ export const generateRandomData = (mode) => {
     capacities: getRandomArray(numOfTrucks, 100, 700),
     distances: getRandom2DArrayWithZeroRadius(numOfTrucks, 0, 10000),
     objects: {
-      values: getRandomArray(numOfItems, 1, 100),
-      weights: getRandomArray(numOfItems, 1, 100),
+      values: getRandomArray(
+        isModeThreeOrFour ? numOfTrucks : numOfItems,
+        1,
+        100
+      ),
+      weights: getRandomArray(
+        isModeThreeOrFour ? numOfTrucks : numOfItems,
+        1,
+        100
+      ),
     },
-    indicesofstartingpointes: getRandomArray(numOfTrucks, 0, numOfTrucks),
-    indicesofendingpointes: getRandomArray(numOfTrucks, 0, numOfTrucks),
-    indicesofpickinguppoints: getRandomArray(numOfItems, 0, numOfItems),
-    indicesofdroppingoffpoints: getRandomArray(numOfItems, 0, numOfItems),
+    indicesOfStartingPoints: getRandomArray(numOfTrucks, 0, numOfTrucks),
+    indicesOfEndingPoints: getRandomArray(numOfTrucks, 0, numOfTrucks),
+    indicesOfPickingUpPoints: getRandomArray(numOfItems, 0, numOfItems),
+    indicesOfDroppingOffPoints: getRandomArray(numOfItems, 0, numOfItems),
     pickUpPenalties: getRandomArray(numOfItems, 0, 50),
     dropOffPenalties: getRandomArray(numOfItems, 0, 50),
   };

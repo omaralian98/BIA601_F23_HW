@@ -20,10 +20,7 @@ function App() {
   return (
     <div className="App p-4 flex flex-col gap-3 justify-between">
       {pathname !== "/map/nodes" && <NavBar />}
-      <div
-        className={`flex justify-center items-center overflow-y-auto ${
-          pathname !== "/map/nodes" ? "" : "hidden"
-        } `}>
+      <div className={`flex justify-center items-center `}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="benchmark" element={<BenchMark />} />

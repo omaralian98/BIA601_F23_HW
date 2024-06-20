@@ -10,7 +10,7 @@ const Maps = () => {
       : response.trucks;
 
   return (
-    <div className="flex gap-5 flex-wrap w-[100vw] h-[100vh] overflow-auto">
+    <div className="flex gap-5 flex-wrap w-[100vw] h-[100vh] justify-center">
       {multipleMaps?.length > 1
         ? multipleMaps?.map((map) => <Graph map={map?.route} />)
         : multipleMaps?.map((map) => <Graph map={map} />)}
@@ -58,15 +58,13 @@ export const Graph = ({ map }) => {
       })
     );
   });
-
   useEffect(() => {
     const nodes = nodesData.map((node, index) => ({ id: index, ...node }));
     const links = temp2.map((link) => ({
-      source: nodes.find((n) => n.id === link.source),
-      target: nodes.find((n) => n.id === link.target),
+      source: link.source,
+      target: link.target,
       distance: link.distance,
     }));
-
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -86,7 +84,7 @@ export const Graph = ({ map }) => {
     return () => {
       simulation.stop();
     };
-  }, [nodesData, temp2]);
+  }, [locations, map]);
 
   return (
     <div className="flex justify-center items-center overflow-auto">
