@@ -11,6 +11,8 @@ public static class Selection
             return x + y.Fitness;
         });
 
+        if (totalFitness == 0) totalFitness = 1;
+
         var individualsWithScores = individuals.Select(x => (x.Solution, Counter: Convert.ToInt32(Math.Round(elite * ((decimal)x.Fitness / totalFitness), 0)))).ToList();
         return individualsWithScores.Aggregate(new List<T>(), (x, y) => {
             for (int i = 0; i < y.Counter; i++)
