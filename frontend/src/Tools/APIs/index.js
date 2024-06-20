@@ -3,18 +3,22 @@ import { useEffect, useState } from "react";
 import useFormData from "../../store";
 import base64 from "base-64";
 
+const baseURL = process.env.REACT_APP_MY_VAR
+  ? "http://localhost:5000"
+  : "https://bia601api-001-site1.ltempurl.com";
+
 const username = "11182471";
 const password = "60-dayfreetrial";
 
 // Encode the credentials in Base64 using base-64 library
 const token = base64.encode(`${username}:${password}`);
 
-export const useGet = (url) => {
+export const useGet = (mode) => {
   const [dataGet, setDataGet] = useState({});
 
   useEffect(() => {
     axios
-      .get(url, {
+      .get(`${baseURL}/api/${mode}`, {
         headers: {
           Authorization: `Basic ${token}`,
         },
@@ -23,7 +27,7 @@ export const useGet = (url) => {
       .catch((error) => {
         console.log(error.message);
       });
-  }, [url]);
+  }, [mode, baseURL]);
   return { dataGet };
 };
 
@@ -31,10 +35,10 @@ export const usePost = () => {
   const { setResponse } = useFormData();
   const [successfulPost, setSuccessfulPost] = useState(false);
 
-  const handleSubmit = (url, postData) => {
+  const handleSubmit = (mode, postData) => {
     setSuccessfulPost(false);
     axios
-      .post(url, postData, {
+      .post(`${baseURL}/api/${mode}`, postData, {
         headers: {
           Authorization: `Basic ${token}`,
           "Content-Type": "application/json",

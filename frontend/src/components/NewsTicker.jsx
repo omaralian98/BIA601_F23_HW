@@ -29,7 +29,7 @@ const NewsTicker = ({ newsItems }) => {
       <TickerContent>
         {newsItems.map((item, index) => (
           <span
-            className="text-white"
+            className="text-white text-lg "
             key={index}
             style={{ paddingRight: "30px" }}>
             {item}

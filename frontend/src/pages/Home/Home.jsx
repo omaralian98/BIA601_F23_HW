@@ -4,6 +4,7 @@ import useFormData from "../../store";
 import { usePost } from "../../Tools/APIs/index";
 import { generateRandomData } from "../../Tools/help_functions/genrateRandom";
 import SectionHome from "../../components/SectionHome";
+import { generateLocationNames } from "../../Tools/help_functions/generateLocationNames";
 
 const modesDesc = [
   {
@@ -36,14 +37,54 @@ const Home = () => {
   const navigate = useNavigate();
   const { handleSubmit, successfulPost } = usePost();
   const [isGenerated, setIsGenerated] = useState(false);
-  const { setFormDataToSend, formDataToSend, mode } = useFormData();
+  const {
+    setFormDataToSend,
+    formDataToSend,
+    mode,
+    addLocations,
+    formDataStorage,
+    addLoctaionsTime,
+  } = useFormData();
+
+  useEffect(() => {
+    setIsGenerated(false);
+    setFormDataToSend(null);
+  }, [mode.link]);
 
   const handleClick = () => {
-    handleSubmit(
-      `https://bia601api-001-site1.ltempurl.com/api/${mode.link}`,
-      formDataToSend
-    );
+    handleSubmit(mode.link, formDataToSend);
   };
+
+  const distances = [];
+
+  useEffect(() => {
+    for (
+      let i = 0;
+      i < formDataStorage?.locations?.locations_name?.length;
+      i++
+    ) {
+      let temp = [];
+      for (
+        let j = 0;
+        j < formDataStorage?.locations?.locations_name?.length;
+        j++
+      ) {
+        if (
+          formDataStorage?.locations?.locations_name[i] ===
+          formDataStorage?.locations?.locations_name[j]
+        )
+          continue;
+        temp.push({
+          start: formDataStorage?.locations?.locations_name[i],
+          end: formDataStorage?.locations?.locations_name[j],
+          distance: formDataToSend?.distances[i][j],
+        });
+      }
+      distances.push(temp);
+      temp = [];
+    }
+    addLoctaionsTime(distances);
+  }, [formDataStorage?.locations?.locations_name, formDataToSend?.distances]);
 
   useEffect(() => {
     if (successfulPost) {
@@ -51,6 +92,10 @@ const Home = () => {
       setIsGenerated(false);
     }
   }, [successfulPost]);
+
+  useEffect(() => {
+    addLocations(generateLocationNames(formDataToSend?.distances?.length));
+  }, [formDataToSend?.distances]);
 
   return (
     <div className="flex flex-col gap-14 h-full w-full">
@@ -99,7 +144,7 @@ const Home = () => {
       <h1 className="text-gray-700 font-bold text-5xl mx-auto">Modes</h1>
       <div className="flex gap-4 my-5 flex-wrap">
         {modesDesc.map((e) => (
-          <SectionHome title={e.title} desc={e.desc} />
+          <SectionHome title={e.title} desc={e.desc} key={e.title} />
         ))}
       </div>
       <div className="bg-gray-300 rounded-xl p-4 flex flex-col gap-4 justify-between mx-auto max-sm:w-[90%]">

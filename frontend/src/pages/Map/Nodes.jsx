@@ -2,12 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import useFormData from "../../store";
 
-const Maps = ({ multipleMaps }) => {
+const Maps = () => {
+  const { response, mode } = useFormData();
+  const multipleMaps =
+    mode.link === "mode1" || mode.link === "mode2"
+      ? [response.bestRoute]
+      : response.trucks;
+
   return (
     <div className="flex gap-5 flex-wrap w-[100vw] h-[100vh] overflow-auto">
-      {multipleMaps.length > 1
-        ? multipleMaps.map((map) => <Graph map={map.route} />)
-        : multipleMaps.map((map) => <Graph map={map} />)}
+      {multipleMaps?.length > 1
+        ? multipleMaps?.map((map) => <Graph map={map?.route} />)
+        : multipleMaps?.map((map) => <Graph map={map} />)}
     </div>
   );
 };
@@ -56,8 +62,8 @@ export const Graph = ({ map }) => {
   useEffect(() => {
     const nodes = nodesData.map((node, index) => ({ id: index, ...node }));
     const links = temp2.map((link) => ({
-      source: link.source,
-      target: link.target,
+      source: nodes.find((n) => n.id === link.source),
+      target: nodes.find((n) => n.id === link.target),
       distance: link.distance,
     }));
 
@@ -80,7 +86,7 @@ export const Graph = ({ map }) => {
     return () => {
       simulation.stop();
     };
-  }, [locations, map]);
+  }, [nodesData, temp2]);
 
   return (
     <div className="flex justify-center items-center overflow-auto">

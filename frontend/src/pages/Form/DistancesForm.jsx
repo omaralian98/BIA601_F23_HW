@@ -69,7 +69,6 @@ const DistancesForm = () => {
       for (let j = 0; j < possibles[i].length; j++) {
         if (possibles[i][j]["id"] === locatinId) {
           possibles[i][j]["distance"] = parseInt(event.target.value);
-          console.log("a");
         } else continue;
       }
     }
@@ -82,7 +81,6 @@ const DistancesForm = () => {
         if (!possibles[i][j]["distance"]) {
           notify("All fields are required");
           setIsEmpty(true);
-          console.log("a");
           return false;
         }
       }
@@ -91,17 +89,20 @@ const DistancesForm = () => {
     }
   };
   const handleAddDistances = () => {
-    for (let i = 0; i < possibles.length; i++) {
-      distances[i] = [];
-      for (let j = 0; j < possibles[i].length; j++) {
-        distances[i][j] =
-          possibles[i][j]["distance"] *
-          (timeUnit === "hours" ? 1 : 60) *
-          (truckSpeed ? truckSpeed : 70);
-      }
-    }
+    setPossibles(
+      possibles.map((e) =>
+        e.map((d) => ({
+          start: d.start,
+          end: d.end,
+          distance:
+            d.distance *
+            (timeUnit === "hours" ? 1 : 60) *
+            (truckSpeed ? truckSpeed : 70),
+        }))
+      )
+    );
 
-    addLoctaionsTime(distances);
+    addLoctaionsTime(possibles);
   };
 
   return (
