@@ -5,6 +5,36 @@ import { usePost } from "../../Tools/APIs/index";
 import { generateRandomData } from "../../Tools/help_functions/genrateRandom";
 import SectionHome from "../../components/SectionHome";
 import { generateLocationNames } from "../../Tools/help_functions/generateLocationNames";
+import random1 from "../../randomData/1.json";
+import random2 from "../../randomData/2.json";
+import random3 from "../../randomData/3.json";
+import random4 from "../../randomData/4.json";
+import random5 from "../../randomData/5.json";
+import random6 from "../../randomData/6.json";
+import random7 from "../../randomData/7.json";
+import random8 from "../../randomData/8.json";
+import random9 from "../../randomData/9.json";
+import random10 from "../../randomData/10.json";
+import random11 from "../../randomData/11.json";
+import random12 from "../../randomData/12.json";
+import random13 from "../../randomData/13.json";
+import { getRandomInt } from "../../Tools/help_functions/genrateRandom";
+
+const randomData = [
+  random1,
+  random2,
+  random3,
+  random4,
+  random5,
+  random6,
+  random7,
+  random8,
+  random9,
+  random10,
+  random11,
+  random12,
+  random13,
+];
 
 const modesDesc = [
   {
@@ -120,7 +150,7 @@ const Home = () => {
         <div className="flex gap-4 flex-col justify-center items-center">
           <button
             onClick={() => {
-              setFormDataToSend(generateRandomData(mode.link));
+              setFormDataToSend(randomData[getRandomInt(0, 14)]);
               setIsGenerated(true);
             }}
             className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-blue-500 hover:bg-blue-400 text-center rounded-xl">
@@ -130,6 +160,23 @@ const Home = () => {
             <button
               onClick={handleClick}
               className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-blue-500 hover:bg-blue-400 text-center rounded-xl">
+              See results on the map
+            </button>
+          )}
+        </div>
+        <div className="flex gap-4 flex-col justify-center items-center">
+          <button
+            onClick={() => {
+              setFormDataToSend(generateRandomData(mode.link));
+              setIsGenerated(true);
+            }}
+            className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-black hover:bg-black text-center rounded-xl">
+            Try it with random data
+          </button>
+          {isGenerated && (
+            <button
+              onClick={handleClick}
+              className="w-fit h-fit max-sm:max-auto text-white font-semibold p-4 bg-black hover:bg-black text-center rounded-xl">
               See results on the map
             </button>
           )}

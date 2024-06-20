@@ -1,0 +1,20 @@
+{
+  "distances": [
+    [0, 15, 30, 45],
+    [15, 0, 20, 35],
+    [30, 20, 0, 15],
+    [45, 35, 15, 0]
+  ],
+  "capacities": [6, 5, 4, 3],
+  "weights": [1, 2, 3, 4, 5],
+  "values": [5, 10, 15, 20, 25],
+  "indicesOfStartingPoints": [0, 1, 2, 3],
+  "indicesOfEndingPoints": [3, 2, 1, 0],
+  "indicesOfPickingUpPoints": [0, 1, 2, 3, 1],
+  "indicesOfDroppingOffPoints": [3, 2, 1, 0, 3],
+  "pickUpPenalties": [12, 22, 32, 42, 52],
+  "dropOffPenalties": [14, 24, 34, 44, 54],
+  "settings": {
+    "algorithmForTSP": 4
+  }
+}
