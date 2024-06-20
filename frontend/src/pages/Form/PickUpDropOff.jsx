@@ -31,7 +31,7 @@ const PickUpDropOff = () => {
   }
 
   const handleChange = (e, i, key) => {
-    formData[key][i] = e.target.value;
+    formData[key][i] = parseInt(e.target.value);
     setFormData(formData);
   };
 
