@@ -8,7 +8,6 @@ const useFormData = create((set) => ({
   mode: { name: "Modes", link: "mode1" },
   changeMode: (mode) => set((store) => ({ ...store, mode })),
   formDataToSend: {
-    capacity: 0,
     distances: [],
     values: [],
     weights: [],

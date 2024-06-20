@@ -68,7 +68,7 @@ const CapacityForm = () => {
             addTruckCapacities(formData);
             navigate(-1);
           }}
-          className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
+          className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-white">
           Previous
         </button>
         <Link
@@ -86,7 +86,7 @@ const CapacityForm = () => {
                 : "/truck-details"
               : ""
           }
-          className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
+          className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-white">
           Next
         </Link>
       </div>
