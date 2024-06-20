@@ -47,7 +47,7 @@ const FinalPage = () => {
       <button
         onClick={() => {
           handleSubmit(
-            `http://bia601api-001-site1.ltempurl.com/api/${mode.link}`,
+            `https://bia601api-001-site1.ltempurl.com/api/${mode.link}`,
             formDataToSend
           );
           if (successfulPost) navigate("/map/nodes");
