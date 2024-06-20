@@ -123,7 +123,7 @@ const InitialForm = () => {
             } else setFormDataStorage(formData);
           }}
           to={!checkIsEmpty() ? "/locations" : ""}
-          className="text-center text-lg bg-blue-600 px-8 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
+          className="text-center text-lg bg-blue-600 px-8 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-white">
           Next
         </Link>
       </div>

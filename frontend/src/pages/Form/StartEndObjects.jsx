@@ -101,7 +101,7 @@ const StartEndObjects = () => {
       </div>
       <div className="w-full flex gap-4 h-fit justify-around flex-wrap">
         <button
-          className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300"
+          className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-white"
           onClick={() => navigate(-1)}>
           Previous
         </button>
@@ -125,7 +125,7 @@ const StartEndObjects = () => {
                 : "/final"
               : ""
           }
-          className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-gray-300">
+          className=" bg-blue-600 px-4 py-3 hover:bg-blue-400 cursor-pointer rounded-lg font-bold text-white">
           Next
         </Link>
       </div>

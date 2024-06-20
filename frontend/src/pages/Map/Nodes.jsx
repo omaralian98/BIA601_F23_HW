@@ -1,20 +1,38 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import useFormData from "../../store";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 const Maps = () => {
-  const { response, mode } = useFormData();
+  const { response, mode, setFormDataToSend } = useFormData();
+  useEffect(() => {
+    setFormDataToSend({
+      distances: [],
+      values: [],
+      weights: [],
+    });
+  }, []);
   const multipleMaps =
     mode.link === "mode1" || mode.link === "mode2"
       ? [response.bestRoute]
       : response.trucks;
 
-  console.log(multipleMaps);
-
   return (
-    <div className="flex flex-wrap gap-5 w-screen h-screen p-4">
+    <div className="flex flex-wrap gap-7 w-screen h-screen p-4">
+      <Link
+        to="/"
+        className=" bg-yellow-400 fixed top-5 right-5 rounded-full p-1">
+        <FaArrowRight size={40} color="white" />
+      </Link>
       {multipleMaps?.map((map, index) => (
-        <Graph key={index} map={map?.route || map} />
+        <Graph
+          key={index}
+          map={map?.route || map}
+          includedItems={map.includedItems}
+          totalValue={map.value}
+          totalDistance={map.distance}
+        />
       ))}
     </div>
   );
@@ -22,7 +40,7 @@ const Maps = () => {
 
 export default Maps;
 
-export const Graph = ({ map }) => {
+export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
@@ -44,6 +62,11 @@ export const Graph = ({ map }) => {
   const svgRef = useRef(null);
   let locations = [];
   let temp2 = [];
+
+  const itemNames =
+    formDataStorage?.objects?.names.length > 0
+      ? includedItems.map((e) => formDataStorage?.objects?.names[parseInt(e)])
+      : includedItems;
 
   const nodesData = formDataStorage?.locations?.locations_name?.map((e) => ({
     id: e,
@@ -105,7 +128,29 @@ export const Graph = ({ map }) => {
   }, [nodesData, temp2]);
 
   return (
-    <div className="flex justify-center items-center overflow-auto w-full h-full border-2 border-black bg-gray-100">
+    <div className="flex flex-wrap p-3 justify-center items-center overflow-auto w-full h-full border-2 border-black bg-gray-100">
+      <div className="w-full flex gap-5 justify-around">
+        <div className=" bg-slate-200 rounded-xl text-center p-3">
+          <h1 className="text-2xl font-bold">Included items:</h1>
+          <div className="flex gap-3">
+            {` { `}
+            {itemNames.map((e) => (
+              <p className="text-lg font-semibold">{e}</p>
+            ))}
+            {` } `}
+          </div>
+        </div>
+
+        <div className=" bg-slate-200 rounded-xl text-center p-3">
+          <h1 className="text-2xl font-bold">Total distance:</h1>
+          <div className="flex gap-3">{`{ ${totalDistance} }`}</div>
+        </div>
+
+        <div className=" bg-slate-200 rounded-xl text-center p-3">
+          <h1 className="text-2xl font-bold">Total value:</h1>
+          <div className="flex gap-3">{`{ ${totalValue} }`}</div>
+        </div>
+      </div>
       <svg
         ref={svgRef}
         width={windowWidth}
@@ -136,12 +181,7 @@ export const Graph = ({ map }) => {
         ))}
         {nodes.map((node, index) => (
           <g key={index}>
-            <circle
-              cx={node.x}
-              cy={node.y}
-              r={7}
-              fill={`${index === 0 ? "green" : "red"}`}
-            />
+            <circle cx={node.x} cy={node.y} r={7} fill={` red`} />
             <text
               x={node.x}
               y={node.y}
