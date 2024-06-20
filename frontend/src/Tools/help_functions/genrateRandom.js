@@ -35,10 +35,10 @@ export const generateRandomData = (mode) => {
         100
       ),
     },
-    indicesOfStartingPoints: getRandomArray(numOfTrucks, 0, numOfTrucks),
-    indicesOfEndingPoints: getRandomArray(numOfTrucks, 0, numOfTrucks),
-    indicesOfPickingUpPoints: getRandomArray(numOfItems, 0, numOfItems),
-    indicesOfDroppingOffPoints: getRandomArray(numOfItems, 0, numOfItems),
+    indicesOfStartingPoints: getRandomArray(numOfTrucks, 0, numOfTrucks - 1),
+    indicesOfEndingPoints: getRandomArray(numOfTrucks, 0, numOfTrucks - 1),
+    indicesOfPickingUpPoints: getRandomArray(numOfItems, 0, numOfItems - 1),
+    indicesOfDroppingOffPoints: getRandomArray(numOfItems, 0, numOfItems - 1),
     pickUpPenalties: getRandomArray(numOfItems, 0, 50),
     dropOffPenalties: getRandomArray(numOfItems, 0, 50),
   };
@@ -54,16 +54,21 @@ export const generateRandomData = (mode) => {
     ...(mode !== "mode1" &&
       mode !== "mode2" &&
       mode !== "mode3" && {
-        indicesofstartingpointes: formDataStorage.indicesofstartingpointes,
-        indicesofendingpointes: formDataStorage.indicesofendingpointes,
+        indicesOfStartingPoints: formDataStorage.indicesOfStartingPoints,
+        indicesOfEndingPoints: formDataStorage.indicesOfEndingPoints,
       }),
-    ...((mode === "mode5" || mode === "mode6") && {
-      indicesofpickinguppoints: formDataStorage.indicesofpickinguppoints,
-      indicesofdroppingoffpoints: formDataStorage.indicesofdroppingoffpoints,
-    }),
-    ...(mode === "mode6" && {
-      pickUpPenalties: formDataStorage.pickUpPenalties,
-      dropOffPenalties: formDataStorage.dropOffPenalties,
-    }),
+    ...(mode === "mode5" || mode === "mode6"
+      ? {
+          indicesOfPickingUpPoints: formDataStorage.indicesOfPickingUpPoints,
+          indicesOfDroppingOffPoints:
+            formDataStorage.indicesOfDroppingOffPoints,
+        }
+      : {}),
+    ...(mode === "mode6"
+      ? {
+          pickUpPenalties: formDataStorage.pickUpPenalties,
+          dropOffPenalties: formDataStorage.dropOffPenalties,
+        }
+      : {}),
   };
 };

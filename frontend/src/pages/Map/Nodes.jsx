@@ -10,10 +10,12 @@ const Maps = () => {
       : response.trucks;
 
   return (
-    <div className="flex gap-5 flex-wrap w-[100vw] h-[100vh] justify-center">
+    <div className="flex gap-5 flex-wrap w-screen h-screen overflow-auto">
       {multipleMaps?.length > 1
-        ? multipleMaps?.map((map) => <Graph map={map?.route} />)
-        : multipleMaps?.map((map) => <Graph map={map} />)}
+        ? multipleMaps?.map((map, index) => (
+            <Graph key={index} map={map?.route} />
+          ))
+        : multipleMaps?.map((map, index) => <Graph key={index} map={map} />)}
     </div>
   );
 };
@@ -40,31 +42,32 @@ export const Graph = ({ map }) => {
     end = formDataStorage?.locations?.locations_name[parseInt(map[i + 1])];
     locations.push({ start, end });
   }
-  locations.map((location, i) => {
-    let x = {};
-    formDataStorage?.locations?.distances?.map((e) =>
-      e.map((d) => {
+
+  locations.forEach((location) => {
+    formDataStorage?.locations?.distances?.forEach((e) => {
+      e.forEach((d) => {
         if (
           d.start === location.start &&
           d.end === (location.end ? location.end : location.start)
         ) {
-          x = {
+          temp2.push({
             source: d.start,
             target: d.end,
             distance: d.distance,
-          };
-          temp2.push(x);
+          });
         }
-      })
-    );
+      });
+    });
   });
+
   useEffect(() => {
-    const nodes = nodesData.map((node, index) => ({ id: index, ...node }));
+    const nodes = nodesData.map((node, index) => ({ id: node.id, ...node }));
     const links = temp2.map((link) => ({
-      source: link.source,
-      target: link.target,
+      source: nodes.find((n) => n.id === link.source),
+      target: nodes.find((n) => n.id === link.target),
       distance: link.distance,
     }));
+
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -75,7 +78,7 @@ export const Graph = ({ map }) => {
           .id((d) => d.id)
       )
       .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(300, 300)) // Center the simulation
+      .force("center", d3.forceCenter(300, 300))
       .on("tick", () => {
         setNodes([...nodes]);
         setLinks([...links]);
@@ -84,11 +87,11 @@ export const Graph = ({ map }) => {
     return () => {
       simulation.stop();
     };
-  }, [locations, map]);
+  }, [nodesData, temp2]);
 
   return (
-    <div className="flex justify-center items-center overflow-auto">
-      <svg ref={svgRef} width={600} height={600} className="overflow-auto">
+    <div className="flex justify-center items-center overflow-auto w-full h-full">
+      <svg ref={svgRef} width={1200} height={1200} className="overflow-auto">
         <defs>
           <marker
             id="arrowhead"
@@ -112,22 +115,21 @@ export const Graph = ({ map }) => {
             markerEnd="url(#arrowhead)"
           />
         ))}
-        {nodes.length > 0 &&
-          nodes.map((node, index) => (
-            <g key={index}>
-              <circle cx={node.x} cy={node.y} r={7} fill="red" />
-              <text
-                x={node.x}
-                y={node.y}
-                dy="-1em"
-                textAnchor="bottom"
-                fontSize="8px"
-                fontWeight="bold"
-                fill="black">
-                {node.label}
-              </text>
-            </g>
-          ))}
+        {nodes.map((node, index) => (
+          <g key={index}>
+            <circle cx={node.x} cy={node.y} r={7} fill="red" />
+            <text
+              x={node.x}
+              y={node.y}
+              dy="-1em"
+              textAnchor="middle"
+              fontSize="8px"
+              fontWeight="bold"
+              fill="black">
+              {node.label}
+            </text>
+          </g>
+        ))}
       </svg>
     </div>
   );
