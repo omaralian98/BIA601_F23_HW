@@ -6,13 +6,7 @@ import { Link } from "react-router-dom";
 
 const Maps = () => {
   const { response, mode, setFormDataToSend } = useFormData();
-  useEffect(() => {
-    setFormDataToSend({
-      distances: [],
-      values: [],
-      weights: [],
-    });
-  }, []);
+
   const multipleMaps =
     mode.link === "mode1" || mode.link === "mode2"
       ? [response.bestRoute]
@@ -30,8 +24,10 @@ const Maps = () => {
           key={index}
           map={map?.route || map}
           includedItems={map.includedItems}
-          totalValue={map.value}
-          totalDistance={map.distance}
+          totalValue={response.totalValue ? response.totalValue : map.value}
+          totalDistance={
+            response.totalDistance ? response.totalDistance : map.distance
+          }
         />
       ))}
     </div>
@@ -134,9 +130,9 @@ export const Graph = ({ map, includedItems, totalDistance, totalValue }) => {
           <h1 className="text-2xl font-bold">Included items:</h1>
           <div className="flex gap-3">
             {` { `}
-            {itemNames?.map((e) => (
-              <p className="text-lg font-semibold">{e}</p>
-            ))}
+            {itemNames?.map(
+              (e) => e && <p className="text-lg font-semibold">{e}</p>
+            )}
             {` } `}
           </div>
         </div>
