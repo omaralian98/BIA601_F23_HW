@@ -12,9 +12,20 @@ public class Mode3
         int TotalDistace = 0;
         int[][] BestRoutes = new int[capacities.Length][];
         int counter = 0;
+
+        foreach (var item in IncludedItems)
+        {
+            Console.WriteLine(string.Join(", ", item));
+        }
+
         for (int j = 0; j < IncludedItems.Length; j++)
         {
-            if (IncludedItems.Length == 1)
+            if (IncludedItems[j].Length == 0)
+            {
+                BestRoutes[counter++] = [];
+                continue;
+            }
+            if (IncludedItems[j].Length == 1)
             {
                 BestRoutes[counter++] = IncludedItems[j];
                 continue;

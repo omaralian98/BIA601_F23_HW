@@ -268,6 +268,7 @@ public class Mode1
 
             int Fitness(int[] chromosome)
             {
+                if (chromosome.Length == 1) return 0;
                 int total = distances[chromosome[^1]][chromosome[0]];
                 for (int i = 1; i < n; i++)
                 {
@@ -279,6 +280,8 @@ public class Mode1
             int[] Mutate(int[] chromosome)
             {
                 int numberOfCrossPoints = settingsForGenetic.NumberOfCrossOverPoints;
+                if (int.IsOddInteger(numberOfCrossPoints)) numberOfCrossPoints++;
+                if (numberOfCrossPoints > n) return chromosome;
                 int[] mutant = new int[n];
                 chromosome.CopyTo(mutant, 0);
 
