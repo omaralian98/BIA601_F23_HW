@@ -217,9 +217,12 @@ public class Mode1
 
                 while (population.Count < populationSize)
                 {
-                    int c1 = rand.Next(0, topElite);
-                    int c2 = rand.Next(0, topElite);
-                    population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
+                    if (settingsForGenetic.NumberOfCrossOverPoints < bestSolution?.Length)
+                    {
+                        int c1 = rand.Next(0, topElite);
+                        int c2 = rand.Next(0, topElite);
+                        population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
+                    }
                     if (rand.NextDouble() < mutationProbability)
                     {
                         int c = rand.Next(0, topElite);
@@ -276,14 +279,13 @@ public class Mode1
             int[] Mutate(int[] chromosome)
             {
                 int numberOfCrossPoints = settingsForGenetic.NumberOfCrossOverPoints;
-                if (int.IsOddInteger(numberOfCrossPoints)) numberOfCrossPoints++;
                 int[] mutant = new int[n];
                 chromosome.CopyTo(mutant, 0);
 
                 HashSet<int> indices = [];
                 while (indices.Count < numberOfCrossPoints)
                 {
-                    indices.Add(rand.Next(n));
+                    indices.Add(rand.Next(0, n));
                 }
 
                 var ind = indices.ToList();
