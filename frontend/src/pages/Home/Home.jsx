@@ -5,6 +5,7 @@ import { usePost } from "../../Tools/APIs/index";
 import { generateRandomData } from "../../Tools/help_functions/genrateRandom";
 import SectionHome from "../../components/SectionHome";
 import { generateLocationNames } from "../../Tools/help_functions/generateLocationNames";
+import Loader from "../../components/Loader/Loader";
 import random1 from "../../randomData/1.json";
 import random2 from "../../randomData/2.json";
 import random3 from "../../randomData/3.json";
@@ -65,7 +66,7 @@ const modesDesc = [
 
 const Home = () => {
   const navigate = useNavigate();
-  const { handleSubmit, successfulPost } = usePost();
+  const { handleSubmit, successfulPost, isLoading } = usePost();
   const [isGeneratedRandom, setIsGeneratedRandom] = useState(false);
   const [preDefinedCases, setPreDefinedCases] = useState(false);
 
@@ -130,6 +131,8 @@ const Home = () => {
     addLocations(generateLocationNames(formDataToSend?.distances?.length));
   }, [formDataToSend?.distances]);
 
+  if (isLoading) return <Loader />;
+
   return (
     <div className="flex flex-col gap-14 h-full w-full">
       <div className="text-center flex flex-col gap-4">
@@ -153,7 +156,7 @@ const Home = () => {
           <button
             onClick={() => {
               setFormDataToSend(randomData[getRandomInt(0, 14)]);
-              changeMode("mode6");
+              changeMode({ name: "Mode 6", link: "mode6" });
               setPreDefinedCases(true);
               setIsGeneratedRandom(false);
             }}
