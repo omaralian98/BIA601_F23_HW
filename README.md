@@ -28,14 +28,17 @@ To start the application, follow these steps:
 
 1. Ensure Node.js and npm are installed on your machine.
 
-2. Open `Start_Server.bat` file located in the root directory.
+2. Open cmd and navigate to frontend folder
 
-3. **Important**: If the batch file fails to start the server and reports that port 5000 is already in use, you must edit the batch file to use the API URL of the backend (typically http://localhost:5001).
+3. Run this command: `npm i`.
+
+4. Open `Start_Server.bat` file located in the root directory.
+
+**Important**: If the batch file fails to start the server and reports that port 5000 is already in use, you must edit the batch file to use another port, like: 5001 or 5002.
 
    - Navigate to the `Start_Server.bat` file.
-   - Edit the server start command to use the appropriate API URL (e.g., `http://localhost:5001`).
-
-4. Save the changes and re-run `Start_Server.bat`.
+   - Change the BACKEND_PORT variable to the available port.
+   - Save the changes and re-run `Start_Server.bat`.
 
 This script initializes both the backend and frontend components of the application.
 
