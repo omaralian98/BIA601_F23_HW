@@ -248,7 +248,7 @@ namespace API.Controllers
         {
             try
             {
-                var (TotalDistance, BestRoute, TotalValue, IncludedItems) = Mode1.Start(request.Distances, request.Capacity, request.Weights, request.Values);
+                var (TotalDistance, BestRoute, TotalValue, IncludedItems) = Mode1.Start(request.Distances, request.Capacity, request.Weights, request.Values, request.Settings);
                 return new ResponseModel
                 {
                     BestRoute = BestRoute,
@@ -268,7 +268,7 @@ namespace API.Controllers
         {
             try
             {
-                var (TotalDistance, BestRoute, TotalValue, IncludedItems) = Mode2.Start(request.Distances, request.Capacity, request.Weights, request.Values);
+                var (TotalDistance, BestRoute, TotalValue, IncludedItems) = Mode2.Start(request.Distances, request.Capacity, request.Weights, request.Values, request.Settings);
                 return new ResponseModel
                 {
                     BestRoute = BestRoute,
@@ -288,7 +288,7 @@ namespace API.Controllers
         {
             try
             {
-                var (TotalDistance, BestRoutes, TotalValue, IncludedItems) = Mode3.Start(request.Distances, request.Capacities, request.Weights, request.Values);
+                var (TotalDistance, BestRoutes, TotalValue, IncludedItems) = Mode3.Start(request.Distances, request.Capacities, request.Weights, request.Values, request.Settings);
                 return ResponseModelForMode3AMore.Map(TotalDistance, BestRoutes, TotalValue, IncludedItems, request.Distances, request.Capacities, request.Values);
             }
             catch (Exception e)

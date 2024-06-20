@@ -3,6 +3,8 @@ This repository contains the assignment submission for BIA601 F23 (Basic Intelli
 
 ## Table of Contents
 - [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Usage](#usage)
 - [Modes](#modes)
   - [Mode 1](#mode-1)
   - [Mode 2](#mode-2)
@@ -14,6 +16,31 @@ This repository contains the assignment submission for BIA601 F23 (Basic Intelli
 ## Overview
 
 This project addresses several optimization challenges, including various scenarios involving the knapsack problem and the traveling salesman problem (TSP). The backend is developed using ASP.NET, while the frontend is built with React.
+
+## Prerequisites
+
+1. **Node.js**: Make sure Node.js is installed on your machine. You can download it from [nodejs.org](https://nodejs.org/).
+2. **npm**: You need npm to run the server make sure it's installed with Node.js
+
+## Usage
+
+To start the application, follow these steps:
+
+1. Ensure Node.js and npm are installed on your machine.
+
+2. Open cmd and navigate to frontend folder
+
+3. Run this command: `npm i`.
+
+4. Open `Start_Server.bat` file located in the root directory.
+
+**Important**: If the batch file fails to start the server and reports that port 5000 is already in use, you must edit the batch file to use another port, like: 5001 or 5002.
+
+   - Navigate to the `Start_Server.bat` file.
+   - Change the BACKEND_PORT variable to the available port.
+   - Save the changes and re-run `Start_Server.bat`.
+
+This script initializes both the backend and frontend components of the application.
 
 ## Modes
 

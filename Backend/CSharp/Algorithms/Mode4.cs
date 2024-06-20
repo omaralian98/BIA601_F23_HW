@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Text;
+using static Algorithms.Mode3;
 using static Algorithms.Mode4;
 
 namespace Algorithms;
@@ -242,7 +243,8 @@ public class Mode4
                 {
                     int c1 = rand.Next(0, topElite);
                     int c2 = rand.Next(0, topElite);
-                    population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
+                    if (settingsForGenetic.NumberOfCrossOverPoints < n)
+                        population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
                     matingCount++;
                     if (rand.NextDouble() < mutationProbability)
                     {
@@ -284,11 +286,14 @@ public class Mode4
             List<Mode3.Solution> Initialize(int size)
             {
                 var population = new List<Mode3.Solution>();
-                for (int i = 0; i < size; i++)
+                Mode3.Solution chromosome = new(knapsacksCounter, capacities);
+                chromosome.PopulateSpeical(n);
+                population.Add(chromosome);
+                for (int i = 1; i < size; i++)
                 {
-                    Mode3.Solution chromosome = new(knapsacksCounter, capacities);
-                    chromosome.PopulateTheKnapsacks(n);
-                    population.Add(chromosome);
+                    Mode3.Solution chromosome2 = new(knapsacksCounter, capacities);
+                    chromosome2.PopulateTheKnapsacks(n);
+                    population.Add(chromosome2);
                 }
                 return population;
             }
