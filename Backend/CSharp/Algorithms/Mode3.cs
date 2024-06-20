@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Text;
 
 namespace Algorithms;
@@ -75,6 +76,15 @@ public class Mode3
                     }
                     TakenItems[taken[j]] =  i;
                 }
+            }
+        }
+
+        public void PopulateSpeical(int size)
+        {
+            for (int i = 0; i < Knapsacks.Length; i++)
+            {
+                Knapsacks[i] = new Knapsack(size, capacities[i]);
+                Knapsacks[i].PopulateEmpty();
             }
         }
 
@@ -223,6 +233,14 @@ public class Mode3
                 }
             }
             return [.. taken];
+        }
+
+        public readonly void PopulateEmpty()
+        {
+            for (int i = 0; i < Chromosome.Length; i++)
+            {
+                Chromosome[i] = false;
+            }
         }
 
         public readonly void Change(int index) => Chromosome[index] = !Chromosome[index];
@@ -513,13 +531,12 @@ public class Mode3
                 {
                     int c1 = rand.Next(0, topElite);
                     int c2 = rand.Next(0, topElite);
-                    population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
-                    matingCount++;
+                    if (settingsForGenetic.NumberOfCrossOverPoints < n)
+                        population.Add(CrossOver(individualScores[c1].solution, individualScores[c2].solution));
                     if (rand.NextDouble() < mutationProbability)
                     {
                         int c = rand.Next(0, topElite);
                         population.Add(Mutate(individualScores[c].solution));
-                        mutationCount++;
                     }
                 }
 
@@ -542,11 +559,14 @@ public class Mode3
             List<Solution> Initialize(int size)
             {
                 var population = new List<Solution>();
-                for (int i = 0; i < size; i++)
+                Solution chromosome = new(knapsacksCounter, capacities);
+                chromosome.PopulateSpeical(n);
+                population.Add(chromosome);
+                for (int i = 1; i < size; i++)
                 {
-                    Solution chromosome = new(knapsacksCounter, capacities);
-                    chromosome.PopulateTheKnapsacks(n);
-                    population.Add(chromosome);
+                    Solution chromosome2 = new(knapsacksCounter, capacities);
+                    chromosome2.PopulateTheKnapsacks(n);
+                    population.Add(chromosome2);
                 }
                 return population;
             }
